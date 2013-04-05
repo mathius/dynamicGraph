@@ -36,4 +36,106 @@ format grafu
 
 ### GENERATOR DAT
 
-- ad Vladove materialy
+(původní verze -- přeracuji)
+základní generátor
+  vstup:
+    - počet vrcholů -- vertices( V ).
+      - V > 0
+    - interval počtu hran edges( Min, Max ) v každém časovém okamžiku
+      - musí platit Min <= Max /\ Max <= ( V*(V-1) ) / 2
+    - faktor obnovy -- pravděpodobnost zániku hrany v libovolném 
+      časovém okamžiku -- remove_edge( Probability )
+      - musí platit 0 <= Probability <= 1
+    - celkový čas trvání grafu duration( D )
+      - D > 0
+  způsob generování:
+    - ověření korektnosti vstupu
+    - na začátku se vybere rovnoměrně číslo z inervalu <Mim,Max> jako
+      počáteční počet hran E
+    - pokud E = ( V*(V-1) )/2 pak jsou spojeny všechny vrcholy
+    - náhodně rovnoměrně se vybírají dvojice z množiny vrcholů, dokud
+      je počet vygenerovaných hran menší než E
+      - pokud je dvojice vygenerována znovu, je zahozena
+    
+    - každou další minutu:
+      - pro každou hranu je podle Probability rozhodnuto, zda bude odstraněna
+      - je náhodně vybráno číslo E z inervalu (Min,Max>
+        - pokud je E menší než aktuání počet hran N, je odtraněno N - E
+          náhodně vybraných hran
+        - pokud je E větší než aktuální počet hran N, je přidáno E - N
+          náhodně vybraných hran
+      - opakuje se po dobu Duration
+ 
+
+rozšířený generátor
+  vstup:
+    ++ Min/Max
+    - počet vrcholů
+    - predikát new_edges( Time, Min, Max ), který pro daný čas vrací minimální
+      a maximální počet hran, které v daném časovém okamžiku mají vzniknout
+      - musí platit Min <= Max
+    - predikát remove_edge( Time, Duration, Probability ), který pro daný čas
+      a dobu aktuálního trvání hrany, vrací pravděpodobnost, že hrana v tomto
+      časovém okamžiku zanikne
+      - musí platit 0 <= Probability <= 1
+      - floating point, 0 = nesmí zaniknou, 1 = musí zaniknout
+    - celkový čas trvání grafu
+  způsob generování:
+    - každou minutu T:
+      - je voláno new_edges( T, Min, Max ), vybráno náhodné číslo
+        E \in <Min, Max> a vytvořeno E nových hran
+        - pokud je aktuální počet hran + E >= ( V*(V-1) )/2 pak je vytvořen
+          úplný graf
+      - pro každou hranu:
+        - je spočítána aktuální doba jejího trvání Duration
+        - ??? hrana může zaniknout i pokud byla právě vytvořdena ??? -- ne
+        - volání remove_edge( T, Duration, Probability ), podle Probability
+          je rozhodnuto, zda bude hrana ukončena, pokud je hrana ukončena
+          je zapsána do výstupního souboru a již se nesmí měnit
+
+Formát vstupu:
+  - vstup od uživatele na příkaz create_graph( Filename ).
+  - dávkový stup ze souboru
+    - soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
+      - deklarace začíná klauzulí create_graph( Filename ).
+      - pokračuje až po další klauzuli create_graph( Filename2 ), nebo
+        po end_of_file
+  - příslušný typ generátoru je automaticky detekován.
+
+Práce se vstupem:
+  - pokud generátor očekává na dané pozici výstupní číselnou hodnotu, je nutné
+    aby hodnota byla aritmeticky vyhodnotitelná (tedy se může jednat o číslo,
+    nebo aritmetický výraz -- viz duration/1 v příkladech).
+  - v přípdě, že vstup nebude korektní, tedy bude například kombinovat predikáty
+    z různých generátorů, generátor ohlásí chybu a odmítne generovat
+  - v případě, že je dodán nekorektní vstup a je tak zjištěno po začátku generování
+    (rozšířený generátor), generátor vypíše varování a ukončí generování v daném
+    okamžiku (vrátí dosud vygenerovaný graf).
+  - obdobně, v případě, že selže některý z uživatelem dodaných predikátů generátor
+    vypíše varování a korektně ukončí generování v daném okamžiku
+  - v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
+
+náhodná čísla:
+library( random )
+načtení: use_module( library( random ) ).
+https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom
+
+ukázkový vstup
+
+% gen_graph.pl
+create_graph( 'test01.graph' ).
+vertices( 16 ).
+edges( 8, 150 ).
+remove_edge( 0 ).
+duration( 24 * 60 ).
+
+create_graph( 'test02.graph' ).
+vertices( 256 ).
+new_edges( 0, 400, 400 ).
+new_edges( Time, Min, Max ) :- Time mod 60 =:= 0, !, Min = 100, Max = 256.
+new_edges( _Time, Min, Max ) :- Min = 0, Max = 0.
+remove_edge( _Time, Duration, Probability ) :- Duration >= 120, !, Probability = 1.
+remove_edge( _Time, Duration, Probability ) :- Probability is duration / 120.
+duration( 24 * 60 * 365 ).
+
+end_of_file.
