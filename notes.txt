@@ -1,0 +1,39 @@
+### USER INTERFACE
+
+- v casovom momente
+- v intervale
+- pocas celej existencie grafu
+
+- zapnut generovanie grafov
+  - 1 parameter s prefixom nazvu suboru
+  - vypisovat kolko minut bude este hrana existovat
+- vypnut generovanie grafov
+
+- analyzovat, v ktorych okamihoch nastala zmena
+  - ak graph, vyegenerovat .dot pre kazdy casovy okamih v danom intervale, kde nastala zmena
+  - varovanie ak sa vygeneruje viac ako 10 suborov
+- najst najvacsiu komponentu a prvy casovy okamih, v ktorom existuje
+  - vypisat jej velkost, vrcholy a hrany
+  - ak graph, vygeneruje .dot v prvom okamihu existencie tej najvacsej komponenty, najvacsia komponenta bude odlisena farebne
+- analyzovat vrchol (vsetky hrany existujuce aspon v 1 momente v zadanom casovom intervale)
+- vypisat prehlad komponent zaciatocnom casovom momente
+  - ak graph, vygenerovat dot
+- statistika vrcholov
+  - vrchol s najvacsim/najmensim poctom hran
+  - yvpise sa vrchol, pocet E hran
+- statistika hran
+  - hrana s najdlhsim/najkratsim(trvanie >=1 ) trvanim
+  - vypisaju sa vrcholy, trvanie od-do
+
+### FORMAT SUBOROV
+
+format grafu
+- synax, syntax timestamp
+- vrcholy a-zA-Z0-9 stringy zacinajuce malym pismenom
+- bez hran a->a
+- trvanie hran je >=0
+- neE 2 hrany medzi a,b v 1 okamihu
+
+### GENERATOR DAT
+
+- ad Vladove materialy
