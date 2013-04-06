@@ -1,0 +1,76 @@
+﻿# User documentation
+
+DynamicGraph provides interactive command line interface. After running the compiled binary (or calling the top level predicate dynamicGraph/0), basic program info is displayed followed by the internal command prompt ('|: '). All the commands are using Prolog predicate syntax - i. e. they must always end with a dot character ('.') with optional parameters in parenrheses before it.
+
+# Graph manipulating commands
+
+graphLoad/1, gl/1
+Load graph from specified file. Syntax of the file contents is checked, if it is not correct, file is not loaded.
+
+graphGenerate/1, gg/1
+Generate new graph according to settings in specified file. Syntax of the configuration file is checked, if it is not correct, the graph is not generated. After generation, graph is automatically saved to file '<graphname>.pl' to current folder.
+
+graph/0, g/0
+Display info about currently loaded graph - name, number or nodes and number of edges.
+
+# Time commands
+
+timeBegin/1, tb/1
+Set beginning of time interval. Time is provided as timestamp YYYYMMDDHHMM (year, month, day, hour, minute). Input format is checked.
+
+timeBegin/0, tb/0
+Set first edge occurence as beginning of time interval.
+
+timeEnd/1, te/1
+Set end of time interval. Time is provided as timestamp YYYYMMDDHHMM (year, month, day, hour, minute). Input format is checked.
+
+timeEnd/0, te/0
+Set last edge occurence as beginning of time interval.
+
+timeInterval/2, ti/2
+Set beginning/end of time interval. Equivalent to setting beginning and end separately. Time is provided as timestamp YYYYMMDDHHMM (year, month, day, hour, minute). Input format is checked.
+
+timeInterval/0, ti/0
+Set time interval from first to last edge occurence. Equivelant to using timeBegin/0 with timeEnd/0.
+
+timeMoment/1, tm/1
+Set both beginning/end of time interval to the same value. Equivalent to using timeBegin/1 and timeEnd/1 with the same timestamp.
+
+time/0, t/0
+Display currently set time interval (beginning, end).
+
+# Graphviz output commands
+
+graphviz/1, gv/1
+Enable Graphviz outputs to specified folder. Folder existance is not checked. All commands providing Graphviz functionality will output to this folder. To change the output folder, run graphviz/1 again with new parameter.
+
+graphvizOff/0, gvo/0
+Disable Graphviz outputs. No following commands will create any Graphviz files.
+
+# Graph statistics commands
+
+statsNodes/0, sn/0
+Display statistics for nodes. For the set time interval, the node with the most and the least (zero included) edges is determined. Displayed is the node name and edge count. In case of multiple results, only the first is displayed. Note: Edges existing in any point of the time interval are considered.
+
+statsEdges/0, se/0
+Display statistics for edges. For the set time interval, the edge with the longest and the shortes (but non-zero) duration is determined.  Displayed is the edge beginning node, end node and time interval. In case of multiple results, only the first is displayed.
+
+statsComponents/0, sc/0
+Display the components at the beginning of the time interval. For each component, its nodes and node count are displayed. If Graphviz support is enabled, graph file for this moment is generated and saved. Graph filename consists of graph name and selected time moment.
+
+statsProgress/0, sp/0
+Display times when graph is changing (edge is added or removed). If Graphviz support is enabled, graph file for each of these moments is generated. Graph filenames consists of graph name and time moment of the change. Note: As a precaution, if the number of files is greater than 10, confiramtion is required from the user.
+
+statsAnalyseNode/1, san/1
+Analyse given node specified by its name. All edges to this node in the selected time interval are displayed along with their count.
+
+statsMaxComponent/0, smc/0
+Determines the maximal component from all the time moments in the selected interval. For the result component, its nodes, edges and size is displayed. In case of multiple results, only the first is displayed.
+
+# Other
+
+help/0, h/0
+Display the list of commands with short description.
+
+quit/0, q/0
+Quit DynamicGraph session.

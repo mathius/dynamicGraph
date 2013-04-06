@@ -1,0 +1,63 @@
+# =================== DynamicGraph ====================
+# =========== time-dependent graph analyser ===========
+# Authors: Andrej Krejcir, Martin Ukrop, Vladimir Still
+#
+# graph: <not loaded>
+# time interval: <not set>
+#
+# Write 'help.' to display help summary.
+|: heeelp.
+# Error: 'heeelp' is not a valid command.
+# Write 'help.' to display help summary.
+|: help.
+# === List of commands 
+# All commands are prolog predicates and must end with a dot.
+# Shorter command equivalents are written in parentheses.
+# 
+# == Graph manipulating commands
+# graphLoad/1           (gl/1)  load graph from specified file
+# graphGenerate/1       (gg/1)  generate new graph according to settings in specified file
+# graph/0               (g/0)   display info about currently loaded graph
+#
+# == Time commands
+# timeBegin/1           (tb/1)  set beginning of time interval
+# timeBegin/0           (tb/0)  set first edge occurence as beginning of time interval 
+# timeEnd/1             (te/1)  set end of time interval
+# timeEnd/0             (te/0)  set last edge occurence as beginning of time interval 
+# timeInterval/2        (ti/2)  set beginning/end of time interval
+# timeInterval/0        (ti/0)  set time interval from first to last edge occurence
+# timeMoment/1          (tm/1)  set both beginning/end of time interval to the same value
+# time/0                (t/0)   display currently set time
+#
+# == Graphviz output commands
+# graphviz/1            (gv/1)  enable Graphviz outputs to specified folder
+# graphvizOff/0         (gvo/0) disable Graphviz outputs
+#
+# == Graph statistics commands
+# statsNodes/0          (sn/0)  display statistics for nodes
+# statsEdges/0          (se/0)  display statistics for edges
+# statsComponents/0     (sc/0)  display statistics for components at the beginning
+# statsProgress/0       (sp/0)  display times when graph is changing
+# statsAnalyseNode/1    (san/1) analyse given node
+# statsMaxComponent/0   (smc/0) find maximal component
+#
+# == Other
+# help/0                (h/0)   display the list of commands
+# quit/0                (q/0)   quit DynamicGraph session
+|: graphLoad('mygraph1.pl').
+# Loading graph 'mygraph1.pl' ... done.
+# Graph name: mygraph
+# Node count: 21
+# Edge count: 53
+|: graphviz('graphs/').
+# Graphviz enabled (directory 'graphs/').
+|: statsNodes.
+# Error: time not set.
+|: timeMoment(201304061917).
+# Interval beginng set: 2013-04-06 19:17
+# Interval end set: 2013-04-06 19:17
+|: statsMaxComponent.
+# Maximal component: { a, b, x, ds, aab}
+# Component size: 5
+# First occurence: 2013-04-06 19:17
+|: quit.
