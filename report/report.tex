@@ -139,12 +139,12 @@
             \item musí platit $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
         \end{itemize}
     \item počet vrcholů
-    \item predikát \pl{new\_edge( Time, Probability )}, který pro daný čas vrací
+    \item predikát \pl{newEdge( Time, Probability )}, který pro daný čas vrací
           pravděpodobnost vzniku hrany mezi libovonlými nespojenými vrcholy
         \begin{itemize}
             \item musí platit $\pl{Min} \le \pl{Max}$
         \end{itemize}
-    \item predikát \pl{remove\_edge( Time, Duration, Probability )}, který pro daný čas
+    \item predikát \pl{removeEdge( Time, Duration, Probability )}, který pro daný čas
     a dobu aktuálního trvání hrany, vrací pravděpodobnost, že hrana v tomto
     časovém okamžiku zanikne
     \item musí platit $0 \le \pl{Probability} \le 1$, floating point
@@ -160,11 +160,11 @@
     \State $Q_A \leftarrow$ queue of all possible edges (without time -- pairs of vertices)
     \ForAll { minute $T \in \langle BeginTime, EndTime \rangle $ }
         \ForAll { edge $E \in Graph( T )$ }
-            \State call $remove\_edge$ with current time $T$ and current duration of $E$
+            \State call $removeEdge$ with current time $T$ and current duration of $E$
             \State remove $E$ with $Probability$
             \If { removed } push to $Q_A$ \EndIf
         \EndFor
-        \State call $new\_edge( T, Probability )$.
+        \State call $newEdge( T, Probability )$.
         \State $Q_a \leftarrow empty queue$
         \While { not empty $_A$ }
             \If { $current edge count == Max$ }
@@ -223,15 +223,15 @@
 
 \subsection{ukázkový vstup (možná podoba)}
 
-\subsubsection{interaktivní režim}
+\subsubsection{Interaktivní režim}
 (za > je vstup uživatele)
 \begin{verbatim}
-> graph.
-> create_graph( 'test01' ).
+> dot.
+> graphGenerate( 'test01' ).
 vertices( N ).> 16
 edges( Min, Max ).> 8, 150
-add_edge( Probability ).> 0.5
-remove_edge( Probability ).> 0.5
+newEdge( Probability ).> 0.5
+removeEdge( Probability ).> 0.5
 duration( BeginTime, EndTime ).> date( 2012, 4, 5, 14, 00 ), date( 2012, 4, 7, 22, 00 )
 generating 'test01.graph' ... done.
 generating 'test01.dot' ... done.
@@ -239,25 +239,29 @@ generating 'test01.dot' ... done.
 >
 \end{verbatim}
 
-\subsubsection{dávkový režim}
+\subsubsection{Dávkový režim}
 
 \begin{lstlisting}[firstnumber=1]
 % gen_graph.pl
-create_graph( 'test01.graph', 'test01.dot' ).
+graphGenerate( 'test01.graph', 'test01.dot' ).
 vertices( 16 ).
 edges( 8, 150 ).
-add_edge( _, 0.5 ).
-remove_edge( _, _, 0.5 ).
+newEdge( _, 0.5 ).
+removeEdge( _, _, 0.5 ).
 duration( date( 2012, 4, 5, 14, 00 ), date( 2012, 4, 7, 22, 00 ) ).
 
-create_graph( 'test02.graph' ).
+graphGenerate( 'test02.graph' ).
 vertices( 256 ).
 edges( 0, ( 256 * 255 ) / 2 ).
-new_edge( 0, 0.9 ).
-new_edge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
-new_edge( _Time, 0.1 ).
-remove_edge( _Time, Duration, Probability ) :- Duration >= 120, !, Probability = 1.
-remove_edge( _Time, Duration, Probability ) :- Probability is duration / 120.
+newEdge( 0, 0.9 ).
+newEdge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
+newEdge( _Time, 0.1 ).
+removeEdge( _Time, Duration, Probability ) :-
+    Duration >= 120,
+    !,
+    Probability = 1.
+removeEdge( _Time, Duration, Probability ) :-
+    Probability is duration / 120.
 duration( date( 1970, 1, 1, 0, 0 ), date( 2038, 1, 19, 3, 14 ) ).
 
 end_of_file.
