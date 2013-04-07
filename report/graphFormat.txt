@@ -1,0 +1,22 @@
+Subory s grafom obsahuju stvoricu pre kazdu hranu:
+[A,B, Timestamp, Duration]
+A, B - nazvy vrcholov - atomicke fakta
+Timestamp - format YYYY-MM-DD+HH:MM 
+Duration - cislo
+
+
+Reprezentacia grafu v programe:
+
+Hrany sa nacitaju do predikatov:
+edge(X,Y, Interval). 
+  Interval - je unifikovatelny s Od-Do
+  Od, Do - zaciatok a koniec intervalu v minutach
+    od pevneho momentu - napr. UNIX time, alebo najskorsi timestamp
+    vo vstupnom subore
+    
+Vrcholy su reprezentovane predikatom:
+vertex(X):- edge(X,_,_).
+vertex(X):- edge(_,X,_).
+Mozno by sa zislo ulozit tieto predikaty ako fakty do programovej databazy.
+
+
