@@ -61,9 +61,22 @@
 \usepackage{float}
 \usepackage{textcomp}
 \usepackage{listings}
+
+% adjust line number margin
+\newlength{\MaxSizeOfLineNumbers}%
+\settowidth{\MaxSizeOfLineNumbers}{\scriptsize 99:\ \,}% Adjust to maximum number of lines
+
 \lstset{ language=Prolog
-       , numberstyle=\tiny
-       , numbers=left }
+       , numberstyle=\scriptsize
+       , numbers=left
+       }
+
+\makeatletter
+\def\lst@PlaceNumber{%
+    \makebox[\MaxSizeOfLineNumbers][r]{\normalfont\lst@numberstyle{\thelstnumber:\ \,}}%
+}
+\makeatother
+
 
 \theoremstyle{plain}
 \newtheorem{lemma}{Lemma}[section]
@@ -72,6 +85,7 @@
 \newtheorem{definition}[lemma]{Definice}
 \theoremstyle{remark}
 \newtheorem{remark}[lemma]{Poznámka}
+
 
 \begin{document}
 \section{USER INTERFACE}
