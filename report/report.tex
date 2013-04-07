@@ -1,0 +1,266 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{lmodern} % newer fonts
+\usepackage[T1]{fontenc} % to make text copyable, before inputenca
+
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage{a4wide}
+\usepackage[fleqn]{amsmath}  %matematické rovnice
+\usepackage{amssymb}  %dvojitý fonty...
+\usepackage{amsthm}   %důkazy
+%\usepackage{latexsym}   %\box
+\usepackage{IEEEtrantools} %lepší bloky rovnic
+\usepackage{tabulary} %tabulky
+
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.6,0.15,0.15}
+\definecolor{dark-green}{rgb}{0.15,0.4,0.15}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\usepackage[ plainpages=false
+           , pdfpagelabels
+           , unicode
+           , draft=false
+           , colorlinks=true
+           , linkcolor={dark-red}
+           , citecolor={dark-green}
+           , urlcolor={medium-blue}
+           ]{hyperref}
+
+
+%\addtolength{\headsep}{-0.5cm}
+%\addtolength{\textheight}{0.5cm}
+%  \addtolength{\hoffset}{-1.6cm}
+%  \addtolength{\textwidth}{1cm}
+
+\usepackage{fancyhdr} %hlavičky
+  \pagestyle{fancy}
+  \fancyhead[RO]{Andrej Krejčír, Vladimír Štill, Martin Ukrop}
+  \fancyhead[LO]{IB013 Assignment report}
+  
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bsl}{\backslash}
+\newcommand{\interval}[2]{\ensuremath{\left(#1, #2\right)}}
+\newcommand{\id}{\,\mathrm{d}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\pro}{\text{pro }}
+
+\newcommand{\pl}[1]{\texttt{#1}} % maybe there is better way -- listing??
+
+\newcommand{\Oh}[1]{\ensuremath{\mathcal{O}\left(#1\right)}}
+%\usepackage{graphicx}
+\usepackage{csquotes}
+% Nastaveni spravnych ceskych uvozovek
+\renewcommand{\uv}[1]{\quotedblbase #1\textquotedblleft}
+\newcommand{\uvv}[1]{\quotesinglbase #1\textquoteleft}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{listings}
+\lstset{ language=Prolog
+       , numberstyle=\tiny
+       , numbers=left }
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{conseq}[lemma]{Důsledek}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definice}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Poznámka}
+
+\begin{document}
+\section{USER INTERFACE}
+
+\begin{itemize}
+    \item v casovom momente
+    \item v intervale
+    \item pocas celej existencie grafu
+
+    \item zapnut generovanie grafov
+        \begin{itemize}
+             \item 1 parameter s prefixom nazvu suboru
+             \item vypisovat kolko minut bude este hrana existovat
+         \end{itemize}
+    \item vypnut generovanie grafov
+
+    \item analyzovat, v ktorych okamihoch nastala zmena
+        \begin{itemize}
+            \item ak graph, vyegenerovat \texttt{.dot} pre kazdy casovy okamih v danom intervale, kde nastala zmena
+             \item varovanie ak sa vygeneruje viac ako 10 suborov
+         \end{itemize}
+    \item najst najvacsiu komponentu a prvy casovy okamih, v ktorom existuje
+        \begin{itemize}
+              \item vypisat jej velkost, vrcholy a hrany
+              \item ak graph, vygeneruje .dot v prvom okamihu existencie tej najvacsej komponenty, najvacsia komponenta bude odlisena farebne
+          \end{itemize}
+    \item analyzovat vrchol (vsetky hrany existujuce aspon v 1 momente v zadanom casovom intervale)
+    \item vypisat prehlad komponent zaciatocnom casovom momente
+        \begin{itemize}
+           \item ak graph, vygenerovat dot
+        \end{itemize}
+    \item statistika vrcholov
+        \begin{itemize}
+          \item vrchol s najvacsim/najmensim poctom hran
+          \item yvpise sa vrchol, pocet E hran
+      \end{itemize}
+    \item statistika hran
+        \begin{itemize}
+          \item hrana s najdlhsim/najkratsim(trvanie >=1 ) trvanim
+          \item vypisaju sa vrcholy, trvanie od-do
+        \end{itemize}
+\end{itemize}
+
+\section{FORMAT SUBOROV}
+
+\subsection{format grafu}
+\begin{itemize}
+    \item synax, syntax timestamp
+    \item vrcholy \texttt{a-zA-Z0-9} stringy zacinajuce malym pismenom
+    \item bez hran a->a
+    \item trvanie hran je >=0
+    \item neE 2 hrany medzi a,b v 1 okamihu
+\end{itemize}
+
+\section{GENERATOR DAT}
+
+\subsection{vstup}
+\begin{itemize}
+    \item počet vrcholů -- \pl{vertices( V )}.
+        \begin{itemize}
+            \item V > 0
+        \end{itemize}
+    \item interval počtu hran \pl{edges( Min, Max )} v každém časovém okamžiku
+        \begin{itemize}
+            \item musí platit $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
+        \end{itemize}
+    \item počet vrcholů
+    \item predikát \pl{new\_edge( Time, Probability )}, který pro daný čas vrací
+          pravděpodobnost vzniku hrany mezi libovonlými nespojenými vrcholy
+        \begin{itemize}
+            \item musí platit $\pl{Min} \le \pl{Max}$
+        \end{itemize}
+    \item predikát \pl{remove\_edge( Time, Duration, Probability )}, který pro daný čas
+    a dobu aktuálního trvání hrany, vrací pravděpodobnost, že hrana v tomto
+    časovém okamžiku zanikne
+    \item musí platit $0 \le \pl{Probability} \le 1$, floating point
+    \item doba trvání grafu \pl{duration( BeginTime, EndTime )}
+        \begin{itemize}
+            \item $\pl{BeginTime} \le \pl{EndTime}$
+            \item \texttt{BeginTime, EndTime :: DateTime}
+        \end{itemize}
+\end{itemize}
+
+\subsection{graph generation}
+\begin{algorithmic}[1]
+    \State $Q_A \leftarrow$ queue of all possible edges (without time -- pairs of vertices)
+    \ForAll { minute $T \in \langle BeginTime, EndTime \rangle $ }
+        \ForAll { edge $E \in Graph( T )$ }
+            \State call $remove\_edge$ with current time $T$ and current duration of $E$
+            \State remove $E$ with $Probability$
+            \If { removed } push to $Q_A$ \EndIf
+        \EndFor
+        \State call $new\_edge( T, Probability )$.
+        \State $Q_a \leftarrow empty queue$
+        \While { not empty $_A$ }
+            \If { $current edge count == Max$ }
+                \State push all edges from $Q_a$ to $Q_A$
+                \State continue to next minute
+            \EndIf
+            \State $E = pop( Q_A )$
+            \State with $Probability$ add $E$ to graph
+            \If { not added } push add E to $Q_a$ \EndIf
+            \If $Q_A$ is empty and $current edge count < Min$
+                \While { current edge count < Min }
+                    \State $E = pop( Q_a )$
+                    \State with $Probability$ add $E$ to graph
+                    \If { not added } push $E$ to $Q_a$ \EndIf
+                \EndWhile
+            \EndIf
+        \EndWhile
+        \State $swap( Q_A, Q_a )$ \Comment{ $Q_A$ was empty}
+    \EndFor
+\end{algorithmic}
+
+\subsection{Formát vstupu}
+\begin{itemize}
+    \item vstup od uživatele na příkaz \pl{create\_graph( Filename )}.
+    \item dávkový stup ze souboru
+        \begin{itemize}
+            \item soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
+            \item deklarace začíná klauzulí \pl{create\_graph( Filename ).}
+            \item pokračuje až po další klauzuli \pl{create\_graph( Filename2 ).}, nebo
+                \pl{po end\_of\_file.}
+        \end{itemize}
+    \item příslušný typ generátoru je automaticky detekován.
+\end{itemize}
+
+\subsection{Práce se vstupem:}
+\begin{itemize}
+    \item pokud generátor očekává na dané pozici výstupní číselnou hodnotu, je nutné
+    aby hodnota byla aritmeticky vyhodnotitelná (tedy se může jednat o číslo,
+    nebo aritmetický výraz -- viz \pl{edges/2} v příkladech).
+    \item v přípdě, že vstup nebude korektní, tedy bude například kombinovat predikáty
+    z různých generátorů, generátor ohlásí chybu a odmítne generovat
+    \item v případě, že je dodán nekorektní vstup a je tak zjištěno po začátku generování
+    (rozšířený generátor), generátor vypíše varování a ukončí generování v daném
+    okamžiku (vrátí dosud vygenerovaný graf).
+    \item obdobně, v případě, že selže některý z uživatelem dodaných predikátů generátor
+    vypíše varování a korektně ukončí generování v daném okamžiku
+    \item v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
+\end{itemize}
+
+\subsection{náhodná čísla}
+\begin{itemize}
+    \item library( random )
+    \item načtení: use\_module( library( random ) ).
+    \item \url{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}
+\end{itemize}
+
+\subsection{ukázkový vstup (možná podoba)}
+
+\subsubsection{interaktivní režim}
+(za > je vstup uživatele)
+\begin{verbatim}
+> graph.
+> create_graph( 'test01' ).
+vertices( N ).> 16
+edges( Min, Max ).> 8, 150
+add_edge( Probability ).> 0.5
+remove_edge( Probability ).> 0.5
+duration( BeginTime, EndTime ).> date( 2012, 4, 5, 14, 00 ), date( 2012, 4, 7, 22, 00 )
+generating 'test01.graph' ... done.
+generating 'test01.dot' ... done.
+
+>
+\end{verbatim}
+
+\subsubsection{dávkový režim}
+
+\begin{lstlisting}[firstnumber=1]
+% gen_graph.pl
+create_graph( 'test01.graph', 'test01.dot' ).
+vertices( 16 ).
+edges( 8, 150 ).
+add_edge( _, 0.5 ).
+remove_edge( _, _, 0.5 ).
+duration( date( 2012, 4, 5, 14, 00 ), date( 2012, 4, 7, 22, 00 ) ).
+
+create_graph( 'test02.graph' ).
+vertices( 256 ).
+edges( 0, ( 256 * 255 ) / 2 ).
+new_edge( 0, 0.9 ).
+new_edge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
+new_edge( _Time, 0.1 ).
+remove_edge( _Time, Duration, Probability ) :- Duration >= 120, !, Probability = 1.
+remove_edge( _Time, Duration, Probability ) :- Probability is duration / 120.
+duration( date( 1970, 1, 1, 0, 0 ), date( 2038, 1, 19, 3, 14 ) ).
+
+end_of_file.
+\end{lstlisting}
+
+\end{document}
