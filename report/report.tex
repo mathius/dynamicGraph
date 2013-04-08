@@ -87,6 +87,7 @@
 \theoremstyle{remark}
 \newtheorem{remark}[lemma]{Poznámka}
 
+\newcommand{\qq}[1]{\textit{\textcolor{red}{#1}}}
 \newcommand{\gv}{\textit{Graphviz }}
 
 \begin{document}
@@ -240,16 +241,24 @@ Quit DynamicGraph session.
 \label{sec:files-generator}
 
 \begin{itemize}
-            \item soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
-            \item deklarace začíná klauzulí \pl{create\_graph( Filename ).}
-            \item pokračuje až po další klauzuli \pl{create\_graph( Filename2 ).}, nebo
-                \pl{po end\_of\_file.}
-    \item příslušný typ generátoru je automaticky detekován.
-            \end{itemize}
-More graphs? Valid Prolog file? For detailed description of the predicates, see \autoref{sec:generator-settings}.
+    \item The declaration of graph to be generated starts with \pl{graphGenerate( Filename ).}
+    \item The declaration ends by next occurence of \pl{graphGenerate/1} or by
+        \pl{end\_of\_file.}
+    \item Input file can contain multiple graph definitions.
+    \item Input file is valid Prolog file but it is not intended to be consulted or
+        compiled with DynamicGraph as a library due to the fact it can contain multiple
+        graphs.
+    \item Custom predicates can be internally used in configuration file, their scope
+        is limited to one graph declaration.
+    \item Graph is described by following predicates (all mandatory): 
+        \pl{vertices/1}, \pl{edges/2}, \pl{newEdge/2}, \pl{removeEdge/3}, \pl{duration/2}.
+        For detailed description of the predicates, see \autoref{sec:generator-settings}.
+
+\end{itemize}
+\qq{More graphs? Valid Prolog file?}
+
 Example of the valid graph generator configuration file follows.
 
-%\begin{lstlisting}[firstnumber=1]
 \begin{verbatim}
 % gen_graph.pl
 graphGenerate( 'test01.graph', 'test01.dot' ).
@@ -275,7 +284,6 @@ duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
 
 end_of_file.
 \end{verbatim}
-%\end{lstlisting}
 
 \subsection{Graphviz files}
 \label{sec:files-graphviz}
