@@ -228,13 +228,33 @@ Quit DynamicGraph session.
 
 \subsection{Graph file}
 \label{sec:files-graph}
+
+The file contains definitions of edges separated by whitespace.
+Edge is defined as a list containing 4 values: \pl{[From, To, Timestamp, Duration]}.
+
 \begin{itemize}
-    \item synax, syntax timestamp
-    \item vrcholy \texttt{a-zA-Z0-9} stringy zacinajuce malym pismenom
-    \item bez hran a->a
-    \item trvanie hran je >=0
-    \item neE 2 hrany medzi a,b v 1 okamihu
+	\item \pl{From} and \pl{To} are names of nodes, using only characters \texttt{a-z A-Z 0-9}
+		and starting with s lowercase latter.	
+		Loop edges are not supported: \pl{From} $\ne$ \pl{To}.
+	\item \pl{Timestamp} is the time when the edge is created,
+		with this format: \pl{YYYY-MM-DD+HH:MM}.
+	\item \pl{Duration} is the number of minutes, how long the edge exists, must be nonnegative.
+		Zero value means that only nodes are created, no edge between them.
+		There can't be multiple edges between two nodes at the same time.
 \end{itemize}
+Example of a valid input file:
+
+\begin{verbatim}
+[a, b, 2013-04-08+12:00, 60]
+[b, c, 2013-04-08+10:00, 200]
+[c, b, 2013-04-07+22:24, 3000]
+
+% This edge is valid, it starts right after the first ends
+[a, b, 2013-04-08+13:00, 60]
+
+[e, f, 2013-04-08+20:00, 0]
+
+\end{verbatim}
 
 \subsection{Graph generator configuration file}
 \label{sec:files-generator}
