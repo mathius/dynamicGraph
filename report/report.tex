@@ -87,7 +87,8 @@
 \theoremstyle{remark}
 \newtheorem{remark}[lemma]{Poznámka}
 
-\newcommand{\gv}{\textit{Graphviz }}
+\newcommand{\qq}[1]{\textit{\textcolor{red}{#1}}}
+\newcommand{\gv}{\textit{Graphviz}}
 
 \begin{document}
 \title{{\Huge DynamicGraph} \\ {\large mid-term report for IB013 Logic Programming} }
@@ -103,7 +104,7 @@ top level predicate \pl{dynamicGraph/0}), basic program info is displayed follow
  with optional parameters in parentheses before it. Commands are divided into several categories.
 
 The interactive interface holds several global settings that can be altered by specific commands. 
-These settings include currently loaded graph, boundaries of the time interval and status of the \gv support. 
+These settings include currently loaded graph, boundaries of the time interval and status of the \gv{} support. 
 Settings are stored as facts dynamically added to program database.
 
 \subsection{Graph manipulating commands}
@@ -166,13 +167,13 @@ Display currently set time interval (beginning, end).
 
 \begin{itemize}
 \item \pl{graphviz/1}, \pl{gv/1} \\
-Enable \gv outputs to specified folder. 
+Enable \gv{} outputs to specified folder. 
 Folder existance is not checked. 
-All commands providing \gv functionality will output to this folder. 
+All commands providing \gv{} functionality will output to this folder. 
 To change the output folder, run \pl{graphviz/1} again with new parameter.
 
 \item \pl{graphvizOff/0}, \pl{gvo/0} \\
-Disable \gv outputs. No following commands will create any \gv files.
+Disable \gv{} outputs. No following commands will create any \gv{} files.
 \end{itemize}
 
 \subsection{Graph statistics commands}
@@ -194,12 +195,12 @@ In case of multiple results, only the first is displayed.
 \item \pl{statsComponents/0}, \pl{sc/0} \\
 Display the components at the beginning of the time interval. 
 For each component, its nodes and node count are displayed. 
-If \gv support is enabled, graph file for this moment is generated and saved. 
+If \gv{} support is enabled, graph file for this moment is generated and saved. 
 Graph file name consists of graph name and selected time moment.
 
 \item \pl{statsProgress/0}, \pl{sp/0} \\
 Display times when graph is changing (edge is added or removed). 
-If \gv support is enabled, graph file for each of these moments is generated. 
+If \gv{} support is enabled, graph file for each of these moments is generated. 
 Graph file names consists of graph name and time moment of the change. \\
 \textit{Note: As a precaution, if the number of files is greater than 10, confirmation is required from the user.}
 
@@ -260,16 +261,47 @@ Example of a valid input file:
 \label{sec:files-generator}
 
 \begin{itemize}
-            \item soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
-            \item deklarace začíná klauzulí \pl{create\_graph( Filename ).}
-            \item pokračuje až po další klauzuli \pl{create\_graph( Filename2 ).}, nebo
-                \pl{po end\_of\_file.}
-    \item příslušný typ generátoru je automaticky detekován.
-            \end{itemize}
-More graphs? Valid Prolog file? For detailed description of the predicates, see \autoref{sec:generator-settings}.
+    \item The declaration of graph to be generated starts with \pl{graphGenerate( Filename ).}
+    \item The declaration ends by next occurence of \pl{graphGenerate/1} or by
+        \pl{end\_of\_file.}
+    \item Input file can contain multiple graph definitions.
+    \item Input file is valid Prolog file but it is not intended to be consulted or
+        compiled with DynamicGraph as a library due to the fact it can contain multiple
+        graphs.
+    \item Custom predicates can be internally used in configuration file, their scope
+        is limited to one graph declaration.
+    \item Graph is described by following predicates (all mandatory): 
+        \begin{itemize}
+            \item \pl{vertices/1}
+
+                Number of vertices of graph. For \pl{vertices( V ).}, it must hold that $V > 0$.
+            \item \pl{edges/2}
+
+                Minimal and maximal number of edges at any point in time.
+                For \pl{edges( Min, Max ).}, it must hold that
+                $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$.
+            \item \pl{newEdge/2}
+
+                \pl{newEdge( Time, Probability )} gives probability \pl{Probability} of
+                edge creation at given time \pl{Time} for all possible edges not currently
+                included in graph. It must hold that $\pl{Min} \le \pl{Max}$.
+            \item \pl{removeEdge/3}
+                
+                \pl{removeEdge( Time, Duration, Probability ).} for given time \pl{Time}
+                and given duration \pl{Duration} of edge at \pl{Time} gives
+                probability \pl{Probability} of edge removal (that is probability
+                that given edge will have its current duration).
+                It must hold that $0 \le \pl{Probability} \le 1$.
+            \item \pl{duration/2}
+
+                Time interval in which graph exists. For \pl{duration( BeginTime, EndTime )}
+                it must hold that  $\pl{BeginTime} \le \pl{EndTime}$ and both
+                \pl{BeginTime} and \pl{EndTime} are valid timestamps.
+        \end{itemize}
+
+\end{itemize}
 Example of the valid graph generator configuration file follows.
 
-%\begin{lstlisting}[firstnumber=1]
 \begin{verbatim}
 % gen_graph.pl
 graphGenerate( 'test01.graph', 'test01.dot' ).
@@ -295,15 +327,14 @@ duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
 
 end_of_file.
 \end{verbatim}
-%\end{lstlisting}
 
 \subsection{Graphviz files}
 \label{sec:files-graphviz}
 
-DynamicGraph provides graphical output using the \gv library. 
+DynamicGraph provides graphical output using the \gv{} library. 
 If this output is enabled (predicate \pl{graphviz/1}), DynamicGraph generated \pl{.dot} files, 
-that can be displayed using the \textit{Dot viewer} from the \gv library. 
-For further information of \gv and full syntax of \pl{.dot} files, consult \url{http://www.graphviz.org/}.
+that can be displayed using the \textit{Dot viewer} from the \gv{} library. 
+For further information of \gv{} and full syntax of \pl{.dot} files, consult \url{http://www.graphviz.org/}.
 
 \section{Computing graph statistics}
 \label{sec:computing}
@@ -326,30 +357,15 @@ Solution analysis. To be added.
 
 Graph generator requires the following parameters to be set:
 \begin{itemize}
-    \item počet vrcholů -- \pl{vertices( V )}.
-        \begin{itemize}
-            \item V > 0
-        \end{itemize}
-    \item interval počtu hran \pl{edges( Min, Max )} v každém časovém okamžiku
-        \begin{itemize}
-            \item musí platit $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
-        \end{itemize}
-    \item počet vrcholů
-    \item predikát \pl{newEdge( Time, Probability )}, který pro daný čas vrací
-          pravděpodobnost vzniku hrany mezi libovonlými nespojenými vrcholy
-        \begin{itemize}
-            \item musí platit $\pl{Min} \le \pl{Max}$
-        \end{itemize}
-    \item predikát \pl{removeEdge( Time, Duration, Probability )}, který pro daný čas
-    a dobu aktuálního trvání hrany, vrací pravděpodobnost, že hrana v tomto
-    časovém okamžiku zanikne
-    \item musí platit $0 \le \pl{Probability} \le 1$, floating point
-    \item doba trvání grafu \pl{duration( BeginTime, EndTime )}
-        \begin{itemize}
-            \item $\pl{BeginTime} \le \pl{EndTime}$
-            \item \texttt{BeginTime, EndTime :: DateTime}
-        \end{itemize}
+    \item number of vertices, $V > 0$
+    \item minimal and maximal number of edges at any moment in time, 
+        $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
+    \item probability of edge apperance in given time
+    \item probability of edge removal given time and current edge duration
+    \item time interval in which graph exists
 \end{itemize}
+
+For more information about generator invocation see following section.
 
 \subsection{Graph generator modes}
 \label{sec:generator-modes}
@@ -366,23 +382,13 @@ The file syntax is checked -- if incorrect, the user is informed and the graph i
 For detailed syntax of this file, see \autoref{sec:files-generator}.
 \end{itemize}
 
-\subsection{Parsing the settings}
-\label{sec:generator-parsing}
-\begin{itemize}
-    \item pokud generátor očekává na dané pozici výstupní číselnou hodnotu, je nutné
-    aby hodnota byla aritmeticky vyhodnotitelná (tedy se může jednat o číslo,
-    nebo aritmetický výraz -- viz \pl{edges/2} v příkladech).
-    \item v přípdě, že vstup nebude korektní, tedy bude například kombinovat predikáty
-    z různých generátorů, generátor ohlásí chybu a odmítne generovat
-    \item v případě, že je dodán nekorektní vstup a je tak zjištěno po začátku generování
-    (rozšířený generátor), generátor vypíše varování a ukončí generování v daném
-    okamžiku (vrátí dosud vygenerovaný graf).
-    \item obdobně, v případě, že selže některý z uživatelem dodaných predikátů generátor
-    vypíše varování a korektně ukončí generování v daném okamžiku
-    \item v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
-\end{itemize}
+Any time generator expects numeric value, any arithmetical expression
+that is arithmetically solvable by Prolog can be used.
 
-\subsection{graph generation}
+If input inconsistency is detected at runtime warning is emitted and generator
+continues with next graph.
+
+\subsection{Graph generation}
 \label{sec:generator-generation}
 
 \begin{algorithmic}[1]
@@ -414,92 +420,6 @@ For detailed syntax of this file, see \autoref{sec:files-generator}.
         \State $swap( Q_A, Q_a )$ \Comment{ $Q_A$ was empty}
     \EndFor
 \end{algorithmic}
-
-\subsection{Formát vstupu}
-\begin{itemize}
-    \item vstup od uživatele na příkaz \pl{create\_graph( Filename )}.
-    \item dávkový vstup ze souboru
-        \begin{itemize}
-            \item soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
-            \item deklarace začíná klauzulí \pl{create\_graph( Filename ).}
-            \item pokračuje až po další klauzuli \pl{create\_graph( Filename2 ).}, nebo
-                \pl{po end\_of\_file.}
-        \end{itemize}
-    \item příslušný typ generátoru je automaticky detekován.
-\end{itemize}
-
-\subsection{Práce se vstupem:}
-\begin{itemize}
-    \item pokud generátor očekává na dané pozici výstupní číselnou hodnotu, je nutné
-    aby hodnota byla aritmeticky vyhodnotitelná (tedy se může jednat o číslo,
-    nebo aritmetický výraz -- viz \pl{edges/2} v příkladech).
-    \item v přípdě, že vstup nebude korektní, tedy bude například kombinovat predikáty
-    z různých generátorů, generátor ohlásí chybu a odmítne generovat
-    \item v případě, že je dodán nekorektní vstup a je tak zjištěno po začátku generování
-    (rozšířený generátor), generátor vypíše varování a ukončí generování v daném
-    okamžiku (vrátí dosud vygenerovaný graf).
-    \item obdobně, v případě, že selže některý z uživatelem dodaných predikátů generátor
-    vypíše varování a korektně ukončí generování v daném okamžiku
-    \item v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
-\end{itemize}
-
-\subsection{náhodná čísla}
-\begin{itemize}
-    \item library( random )
-    \item načtení: use\_module( library( random ) ).
-    \item \url{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}
-\end{itemize}
-
-\subsection{ukázkový vstup (možná podoba)}
-
-\subsubsection{Interaktivní režim}
-(za \texttt{|:} je vstup uživatele)
-\begin{verbatim}
-|: graphviz( 'graphs' ).
-|: graphGenerate( 'test01' ).
-vertices( N )?
-|: 16
-edges( Min, Max )?
-|: 8, 150
-newEdge( Probability )?
-|: 0.5
-removeEdge( Probability )?
-|: 0.5
-duration( BeginTime, EndTime )?
-|: 2012-4-5+14:00, 2012-4-7+22:00
-generating 'test01.graph' ... done.
-generating 'graphs/test01.dot' ... done.
-
-|:
-\end{verbatim}
-
-\subsubsection{Dávkový režim}
-
-\begin{lstlisting}[firstnumber=1]
-% gen_graph.pl
-graphGenerate( 'test01.graph', 'test01.dot' ).
-vertices( 16 ).
-edges( 8, 150 ).
-newEdge( _, 0.5 ).
-removeEdge( _, _, 0.5 ).
-duration( 2012-4-5+14:00, 2012-4-7+22:00 ).
-
-graphGenerate( 'test02.graph' ).
-vertices( 256 ).
-edges( 0, ( 256 * 255 ) / 2 ).
-newEdge( 0, 0.9 ).
-newEdge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
-newEdge( _Time, 0.1 ).
-removeEdge( _Time, Duration, Probability ) :-
-    Duration >= 120,
-    !,
-    Probability = 1.
-removeEdge( _Time, Duration, Probability ) :-
-    Probability is duration / 120.
-duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
-
-end_of_file.
-\end{lstlisting}
 
 \section{Examples}
 \section{Example CLI session}
