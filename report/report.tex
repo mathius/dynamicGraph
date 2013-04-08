@@ -255,8 +255,6 @@ Quit DynamicGraph session.
         For detailed description of the predicates, see \autoref{sec:generator-settings}.
 
 \end{itemize}
-\qq{More graphs? Valid Prolog file?}
-
 Example of the valid graph generator configuration file follows.
 
 \begin{verbatim}
@@ -370,7 +368,7 @@ For detailed syntax of this file, see \autoref{sec:files-generator}.
     \item v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
 \end{itemize}
 
-\subsection{graph generation}
+\subsection{Graph generation}
 \label{sec:generator-generation}
 
 \begin{algorithmic}[1]
@@ -402,92 +400,6 @@ For detailed syntax of this file, see \autoref{sec:files-generator}.
         \State $swap( Q_A, Q_a )$ \Comment{ $Q_A$ was empty}
     \EndFor
 \end{algorithmic}
-
-\subsection{Formát vstupu}
-\begin{itemize}
-    \item vstup od uživatele na příkaz \pl{create\_graph( Filename )}.
-    \item dávkový vstup ze souboru
-        \begin{itemize}
-            \item soubor může obsahovat více deklarací grafu, pak jsou generovány postupně
-            \item deklarace začíná klauzulí \pl{create\_graph( Filename ).}
-            \item pokračuje až po další klauzuli \pl{create\_graph( Filename2 ).}, nebo
-                \pl{po end\_of\_file.}
-        \end{itemize}
-    \item příslušný typ generátoru je automaticky detekován.
-\end{itemize}
-
-\subsection{Práce se vstupem:}
-\begin{itemize}
-    \item pokud generátor očekává na dané pozici výstupní číselnou hodnotu, je nutné
-    aby hodnota byla aritmeticky vyhodnotitelná (tedy se může jednat o číslo,
-    nebo aritmetický výraz -- viz \pl{edges/2} v příkladech).
-    \item v přípdě, že vstup nebude korektní, tedy bude například kombinovat predikáty
-    z různých generátorů, generátor ohlásí chybu a odmítne generovat
-    \item v případě, že je dodán nekorektní vstup a je tak zjištěno po začátku generování
-    (rozšířený generátor), generátor vypíše varování a ukončí generování v daném
-    okamžiku (vrátí dosud vygenerovaný graf).
-    \item obdobně, v případě, že selže některý z uživatelem dodaných predikátů generátor
-    vypíše varování a korektně ukončí generování v daném okamžiku
-    \item v případě dávkového vstupu se chyby řeší pro každý graf jednotlivě
-\end{itemize}
-
-\subsection{náhodná čísla}
-\begin{itemize}
-    \item library( random )
-    \item načtení: use\_module( library( random ) ).
-    \item \url{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}
-\end{itemize}
-
-\subsection{ukázkový vstup (možná podoba)}
-
-\subsubsection{Interaktivní režim}
-(za \texttt{|:} je vstup uživatele)
-\begin{verbatim}
-|: graphviz( 'graphs' ).
-|: graphGenerate( 'test01' ).
-vertices( N )?
-|: 16
-edges( Min, Max )?
-|: 8, 150
-newEdge( Probability )?
-|: 0.5
-removeEdge( Probability )?
-|: 0.5
-duration( BeginTime, EndTime )?
-|: 2012-4-5+14:00, 2012-4-7+22:00
-generating 'test01.graph' ... done.
-generating 'graphs/test01.dot' ... done.
-
-|:
-\end{verbatim}
-
-\subsubsection{Dávkový režim}
-
-\begin{lstlisting}[firstnumber=1]
-% gen_graph.pl
-graphGenerate( 'test01.graph', 'test01.dot' ).
-vertices( 16 ).
-edges( 8, 150 ).
-newEdge( _, 0.5 ).
-removeEdge( _, _, 0.5 ).
-duration( 2012-4-5+14:00, 2012-4-7+22:00 ).
-
-graphGenerate( 'test02.graph' ).
-vertices( 256 ).
-edges( 0, ( 256 * 255 ) / 2 ).
-newEdge( 0, 0.9 ).
-newEdge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
-newEdge( _Time, 0.1 ).
-removeEdge( _Time, Duration, Probability ) :-
-    Duration >= 120,
-    !,
-    Probability = 1.
-removeEdge( _Time, Duration, Probability ) :-
-    Probability is duration / 120.
-duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
-
-end_of_file.
-\end{lstlisting}
 
 \section{Examples}
 \section{Example CLI session}
