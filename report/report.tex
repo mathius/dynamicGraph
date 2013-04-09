@@ -233,7 +233,8 @@ Quit DynamicGraph session.
 \subsection{Graph file}
 \label{sec:files-graph}
 
-The input file contains definitions of edges separated by whitespace.
+The input file contains definitions of edges separated by whitespace
+and a fact defining name of the graph: \pl{name(Name).}
 Edges are defined by prolog predicates: \pl{e(From, To, Timestamp, Duration)},
 they must be defined only by syntactically valid facts (ending with \pl{.}).
 Only one graph can be defined in one file.
@@ -244,7 +245,8 @@ Only one graph can be defined in one file.
 		Loop edges are not supported: \pl{From} $\ne$ \pl{To}.
 	\item \pl{Timestamp} is the time when the edge is created,
 		with this format: \pl{YYYY-MM-DD+HH:MM}.
-	\item \pl{Duration} is the number of minutes, how long the edge exists, must be nonnegative.
+	\item \pl{Duration} is the number of minutes, how long the edge exists, must be non-negative
+		and can be written as an arithmetic expression.
 		Zero value means that only nodes are created, no edge between them (which
         can be used to define disjoint vertices).
 		There can't be multiple edges between two nodes at the same time.
@@ -252,6 +254,9 @@ Only one graph can be defined in one file.
 Example of a valid input file:
 
 \begin{verbatim}
+
+name('Name of graph').
+
 e(a, b, 2013-04-08+12:00, 60).
 e(b, c, 2013-04-08+10:00, 200).
 e(c, b, 2013-04-07+22:24, 3000).
@@ -260,6 +265,7 @@ e(c, b, 2013-04-07+22:24, 3000).
 e(a, b, 2013-04-08+13:00, 60).
 
 e(e, f, 2013-04-08+20:00, 0).
+
 \end{verbatim}
 
 \subsection{Graph generator configuration file}
@@ -352,7 +358,7 @@ For further information of \gv{} and full syntax of \pl{.dot} files, consult \ur
 \label{sec:computing-time}
 
 The input time format \pl{YYYY-MM-DD+HH:MM} is internally converted to a single number,
-representing the number of minutes passed since \pl{2000-01-01+00:00}. 
+representing the number of minutes passed since \pl{1970-01-01+00:00}. 
 Similar to UNIX time. Time before this date is represented by a negative number.
  
 
