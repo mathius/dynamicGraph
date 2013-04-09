@@ -272,15 +272,11 @@ e(e, f, 2013-04-08+20:00, 0).
 \label{sec:files-generator}
 
 \begin{itemize}
-    \item The declaration of graph to be generated starts with \pl{graphGenerate( Filename ).}
-    \item The declaration ends by next occurence of \pl{graphGenerate/1} or by
-        \pl{end\_of\_file.}
-    \item Input file can contain multiple graph definitions.
-    \item Input file is valid Prolog file but it is not intended to be consulted or
-        compiled with DynamicGraph as a library due to the fact it can contain multiple
-        graphs.
-    \item Custom predicates can be internally used in configuration file, their scope
-        is limited to one graph declaration.
+    \item Only one graph can be described in one generator file.
+    \item Graph can be named by \pl{name/1}. If name is omitted name of configuration file
+        up to first dot is used.
+    \item Input file is valid Prolog file.
+    \item Custom predicates can be internally used in configuration file.
     \item Graph is described by following predicates (all mandatory): 
         \begin{itemize}
             \item \pl{vertices/1}
@@ -311,18 +307,20 @@ e(e, f, 2013-04-08+20:00, 0).
         \end{itemize}
 
 \end{itemize}
-Example of the valid graph generator configuration file follows.
+Two examples of the valid graph generator configuration files follow.
 
 \begin{verbatim}
-% gen_graph.pl
-graphGenerate( 'test01.graph' ).
+% gen_graph_01.pl
 vertices( 16 ).
 edges( 8, 150 ).
 newEdge( _, 0.5 ).
 removeEdge( _, _, 0.5 ).
 duration( 2012-4-5+14:00, 2012-4-7+22:00 ).
+end_of_file.
 
-graphGenerate( 'test02.graph' ).
+
+% gen_graph_02.pl
+name( 'test02.pl' ).
 vertices( 256 ).
 edges( 0, ( 256 * 255 ) / 2 ).
 newEdge( 0, 0.9 ).
@@ -335,8 +333,6 @@ removeEdge( _Time, Duration, Probability ) :-
 removeEdge( _Time, Duration, Probability ) :-
     Probability is duration / 120.
 duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
-
-end_of_file.
 \end{verbatim}
 
 \subsection{Graphviz files}
