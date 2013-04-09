@@ -230,8 +230,9 @@ Quit DynamicGraph session.
 \subsection{Graph file}
 \label{sec:files-graph}
 
-The file contains definitions of edges separated by whitespace.
-Edge is defined as a list containing 4 values: \pl{[From, To, Timestamp, Duration]}.
+The input file contains definitions of edges separated by whitespace.
+Edge is defined as this prolog predicate: \pl{e(From, To, Timestamp, Duration)}.
+Only one graph can be defined in one file.
 
 \begin{itemize}
 	\item \pl{From} and \pl{To} are names of nodes, using only characters \texttt{a-z A-Z 0-9}
@@ -246,14 +247,14 @@ Edge is defined as a list containing 4 values: \pl{[From, To, Timestamp, Duratio
 Example of a valid input file:
 
 \begin{verbatim}
-[a, b, 2013-04-08+12:00, 60]
-[b, c, 2013-04-08+10:00, 200]
-[c, b, 2013-04-07+22:24, 3000]
+e(a, b, 2013-04-08+12:00, 60)
+e(b, c, 2013-04-08+10:00, 200)
+e(c, b, 2013-04-07+22:24, 3000)
 
 % This edge is valid, it starts right after the first ends
-[a, b, 2013-04-08+13:00, 60]
+e(a, b, 2013-04-08+13:00, 60)
 
-[e, f, 2013-04-08+20:00, 0]
+e(e, f, 2013-04-08+20:00, 0)
 
 \end{verbatim}
 
@@ -339,13 +340,32 @@ For further information of \gv{} and full syntax of \pl{.dot} files, consult \ur
 \section{Computing graph statistics}
 \label{sec:computing}
 
-Solution analysis. To be added.
 
+%Solution analysis. To be added.
+
+\subsection{Time representation}
+\label{sec:computing-time}
+
+The input time format \pl{YYYY-MM-DD+HH:MM} is internally converted to a single number,
+representing the number of minutes passed since \pl{2000-01-01+00:00}. 
+Similar to UNIX time. Time before this date is represented by a negative number.
+ 
+
+\subsection{Graph representation}
+\label{sec:computing-graph} 
+
+The loaded graph, is saved to dynamic database. This means that there can be only one graph loaded at the same time. Before a new graph is loaded the old one is deleted form database.
+
+Edges are inserted into dynamic database as facts \pl{edge(From,To,Start,End).}\\
+Nodes can be represented as this predicate: \\
+\pl{ node(X) :- edge(X,\_,\_,\_). \\
+ node(X) :- edge(\_,X,\_,\_).}
+ 
 \subsection{Random numbers}
 \label{sec:computing-random}
 \begin{itemize}
     \item library( random )
-    \item načtení: use\_module( library( random ) ).
+    \item use\_module( library( random ) ).
     \item \url{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}
 \end{itemize}
 
