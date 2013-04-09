@@ -255,7 +255,6 @@ e(c, b, 2013-04-07+22:24, 3000)
 e(a, b, 2013-04-08+13:00, 60)
 
 e(e, f, 2013-04-08+20:00, 0)
-
 \end{verbatim}
 
 \subsection{Graph generator configuration file}
@@ -357,17 +356,26 @@ Similar to UNIX time. Time before this date is represented by a negative number.
 The loaded graph, is saved to dynamic database. This means that there can be only one graph loaded at the same time. Before a new graph is loaded the old one is deleted form database.
 
 Edges are inserted into dynamic database as facts \pl{edge(From,To,Start,End).}\\
-Nodes can be represented as this predicate: \\
-\pl{ node(X) :- edge(X,\_,\_,\_). \\
- node(X) :- edge(\_,X,\_,\_).}
+Nodes can be represented as this predicate:
+\begin{verbatim}
+node(X) :- edge(X,_,_,_).
+node(X) :- edge(_,X,_,_).
+\end{verbatim}
  
 \subsection{Random numbers}
 \label{sec:computing-random}
+
+Random number support is essential in graph generator, to facilitate random
+numbers the \href{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}{\pl{random}}
+library is used.
+
+\iffalse
 \begin{itemize}
-    \item library( random )
-    \item use\_module( library( random ) ).
-    \item \url{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}
+    \item \pl{random} library
+    \item \pl{use\_module( library( random ) ).}
+    \item \href{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}{\texttt{https://www.fi.muni.cz/$\sim$hanka/sicstus/doc/html/sicstus/\\lib\_002drandom.html\#lib\_002drandom}}
 \end{itemize}
+\fi
 
 \section{Graph generator}
 \label{sec:generator}
