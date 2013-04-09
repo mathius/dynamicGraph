@@ -123,7 +123,7 @@ Syntax  of the values from user are checked, if incorrect, the graph is not gene
 After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
 
 \item \pl{graph/0}, \pl{g/0} \\
-Display info about currently loaded graph - name, number or nodes and number of edges.
+Display info about currently loaded graph - name, number of nodes and number of edges.
 \end{itemize}
 
 \subsection{Time commands}
@@ -132,24 +132,24 @@ Display info about currently loaded graph - name, number or nodes and number of 
 \item \pl{timeBegin/1}, \pl{tb/1} \\
 Set beginning of time interval. 
 Time is provided in time stamp format. 
-Input format is checked.
+Input validity is checked.
 
 \item \pl{timeBegin/0}, \pl{tb/0} \\
-Set first edge occurence as beginning of time interval.
+Set first edge occurrence as beginning of time interval.
 
 \item \pl{timeEnd/1}, \pl{te/1} \\
 Set end of time interval. 
 Time is provided in time stamp format. 
-Input format is checked.
+Input validity is checked.
 
 \item \pl{timeEnd/0}, \pl{te/0} \\
-Set last edge occurence as beginning of time interval.
+Set last edge occurrence as beginning of time interval.
 
 \item \pl{timeInterval/2}, \pl{ti/2} \\
 Set beginning/end of time interval. 
 Equivalent to setting beginning and end separately. 
 Time is provided in time stamp format. 
-Input format is checked.
+Input validity is checked.
 
 \item \pl{timeInterval/0}, \pl{ti/0} \\
 Set time interval from first to last edge occurrence. 
@@ -168,7 +168,7 @@ Display currently set time interval (beginning, end).
 \begin{itemize}
 \item \pl{graphviz/1}, \pl{gv/1} \\
 Enable \gv{} outputs to specified folder. 
-Folder existance is not checked. 
+Folder existence is not checked. 
 All commands providing \gv{} functionality will output to this folder. 
 To change the output folder, run \pl{graphviz/1} again with new parameter.
 
@@ -231,7 +231,8 @@ Quit DynamicGraph session.
 \label{sec:files-graph}
 
 The input file contains definitions of edges separated by whitespace.
-Edge is defined as this prolog predicate: \pl{e(From, To, Timestamp, Duration)}.
+Edges are defined by prolog predicates: \pl{e(From, To, Timestamp, Duration)},
+they must be defined only by syntactically valid facts (ending with \pl{.}).
 Only one graph can be defined in one file.
 
 \begin{itemize}
@@ -241,20 +242,21 @@ Only one graph can be defined in one file.
 	\item \pl{Timestamp} is the time when the edge is created,
 		with this format: \pl{YYYY-MM-DD+HH:MM}.
 	\item \pl{Duration} is the number of minutes, how long the edge exists, must be nonnegative.
-		Zero value means that only nodes are created, no edge between them.
+		Zero value means that only nodes are created, no edge between them (which
+        can be used to define disjoint vertices).
 		There can't be multiple edges between two nodes at the same time.
 \end{itemize}
 Example of a valid input file:
 
 \begin{verbatim}
-e(a, b, 2013-04-08+12:00, 60)
-e(b, c, 2013-04-08+10:00, 200)
-e(c, b, 2013-04-07+22:24, 3000)
+e(a, b, 2013-04-08+12:00, 60).
+e(b, c, 2013-04-08+10:00, 200).
+e(c, b, 2013-04-07+22:24, 3000).
 
 % This edge is valid, it starts right after the first ends
-e(a, b, 2013-04-08+13:00, 60)
+e(a, b, 2013-04-08+13:00, 60).
 
-e(e, f, 2013-04-08+20:00, 0)
+e(e, f, 2013-04-08+20:00, 0).
 \end{verbatim}
 
 \subsection{Graph generator configuration file}
@@ -304,7 +306,7 @@ Example of the valid graph generator configuration file follows.
 
 \begin{verbatim}
 % gen_graph.pl
-graphGenerate( 'test01.graph', 'test01.dot' ).
+graphGenerate( 'test01.graph' ).
 vertices( 16 ).
 edges( 8, 150 ).
 newEdge( _, 0.5 ).
@@ -332,9 +334,10 @@ end_of_file.
 \label{sec:files-graphviz}
 
 DynamicGraph provides graphical output using the \gv{} library. 
-If this output is enabled (predicate \pl{graphviz/1}), DynamicGraph generated \pl{.dot} files, 
-that can be displayed using the \textit{Dot viewer} from the \gv{} library. 
-For further information of \gv{} and full syntax of \pl{.dot} files, consult \url{http://www.graphviz.org/}.
+If this output is enabled (predicate \pl{graphviz/1}), DynamicGraph generates \pl{.dot} files, 
+that can be displayed using the \textit{Dot viewer} from the \gv{} library or processed
+by any software with \texttt{.dot} support.
+For further information of \gv{} and full syntax of \pl{.dot} files, consult \url{http://www.graphviz.org}.
 
 \section{Computing graph statistics}
 \label{sec:computing}
@@ -353,9 +356,12 @@ Similar to UNIX time. Time before this date is represented by a negative number.
 \subsection{Graph representation}
 \label{sec:computing-graph} 
 
-The loaded graph, is saved to dynamic database. This means that there can be only one graph loaded at the same time. Before a new graph is loaded the old one is deleted form database.
+The loaded graph, is saved to program database. This means that there can be only one
+graph loaded at the same time. Before a new graph is loaded the old one is deleted
+form database.
 
-Edges are inserted into dynamic database as facts \pl{edge(From,To,Start,End).}\\
+Edges are inserted into program database as facts \pl{edge(From,To,Start,End).}
+
 Nodes can be represented as this predicate:
 \begin{verbatim}
 node(X) :- edge(X,_,_,_).
@@ -388,7 +394,7 @@ Graph generator requires the following parameters to be set:
     \item number of vertices, $V > 0$
     \item minimal and maximal number of edges at any moment in time, 
         $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
-    \item probability of edge apperance in given time
+    \item probability of edge appearance in given time
     \item probability of edge removal given time and current edge duration
     \item time interval in which graph exists
 \end{itemize}
@@ -402,7 +408,7 @@ Settings for graph generator can be set in different 2 modes:
 \item \textbf{Interactive mode} \\
 This mode is activated when using \pl{graphGenerate/0}. 
 User is prompted for all settings one-by-one. Input values are checked for correct syntax. 
-For an example of interactive graph generation, see \autoref{sec:exmaple-cli}.
+For an example of interactive graph generation, see \autoref{sec:example-cli}.
 \item \textbf{Batch mode} \\
 This mode is activated when using \pl{graphGenerate/1}. 
 Settings are loaded from external file specified in parameter. 
@@ -451,7 +457,7 @@ continues with next graph.
 
 \section{Examples}
 \section{Example CLI session}
-\label{sec:exmaple-cli}
+\label{sec:example-cli}
 \verbatiminput{session.txt}
 
 
