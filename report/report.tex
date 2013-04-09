@@ -292,7 +292,7 @@ e(e, f, 2013-04-08+20:00, 0).
 
                 \pl{newEdge( Time, Probability )} gives probability \pl{Probability} of
                 edge creation at given time \pl{Time} for all possible edges not currently
-                included in graph. It must hold that $\pl{Min} \le \pl{Max}$.
+                included in graph. It must hold that $0 \le \pl{Probability} \le 1$.
             \item \pl{removeEdge/3}
                 
                 \pl{removeEdge( Time, Duration, Probability ).} for given time \pl{Time}
@@ -435,21 +435,21 @@ continues with next graph.
     \State $Q_A \leftarrow$ queue of all possible edges (without time -- pairs of vertices)
     \ForAll { minute $T \in \langle BeginTime, EndTime \rangle $ }
         \ForAll { edge $E \in Graph( T )$ }
-            \State call $removeEdge$ with current time $T$ and current duration of $E$
+            \State call \pl{removeEdge} with current time $T$ and current duration of $E$
             \State remove $E$ with $Probability$
             \If { removed } push to $Q_A$ \EndIf
         \EndFor
-        \State call $newEdge( T, Probability )$.
-        \State $Q_a \leftarrow empty queue$
+        \State call \pl{newEdge( T, Probability )}.
+        \State $Q_a \leftarrow \text{empty queue}$
         \While { not empty $_A$ }
-            \If { $current edge count == Max$ }
+            \If { $\text{current edge count} == Max$ }
                 \State push all edges from $Q_a$ to $Q_A$
                 \State continue to next minute
             \EndIf
             \State $E = pop( Q_A )$
             \State with $Probability$ add $E$ to graph
             \If { not added } push add E to $Q_a$ \EndIf
-            \If $Q_A$ is empty and $current edge count < Min$
+            \If { $Q_A$ is empty and current edge count${}< Min$ }
                 \While { current edge count < Min }
                     \State $E = pop( Q_a )$
                     \State with $Probability$ add $E$ to graph
