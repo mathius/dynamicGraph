@@ -184,7 +184,7 @@ Display statistics for nodes.
 For the set time interval, the node with the most and the least (zero included) edges is determined. 
 Displayed is the node name and edge count. 
 In case of multiple results, only the first is displayed. \\
-\textit{Note: Edges existing in any point of the time interval are considered.}
+\textit{Note: All edges exisiting at least one minute in the time interval are considered.}
 
 \item \pl{statsEdges/0}, \pl{se/0} \\
 Display statistics for edges. 
@@ -241,20 +241,18 @@ Only one graph can be defined in one file.
 
 \begin{itemize}
 	\item \pl{From} and \pl{To} are names of nodes, using only characters \texttt{a-z A-Z 0-9}
-		and starting with s lowercase latter.	
+		and starting with a lowercase letter.	
 		Loop edges are not supported: \pl{From} $\ne$ \pl{To}.
 	\item \pl{Timestamp} is the time when the edge is created,
 		with this format: \pl{YYYY-MM-DD+HH:MM}.
-	\item \pl{Duration} is the number of minutes, how long the edge exists, must be non-negative
+	\item \pl{Duration} is the number of minutes, how long the edge exists. It must be non-negative
 		and can be written as an arithmetic expression.
 		Zero value means that only nodes are created, no edge between them (which
         can be used to define disjoint vertices).
 		There can't be multiple edges between two nodes at the same time.
 \end{itemize}
 Example of a valid input file:
-
 \begin{verbatim}
-
 name('Name of graph').
 
 e(a, b, 2013-04-08+12:00, 60).
@@ -273,7 +271,7 @@ e(e, f, 2013-04-08+20:00, 0).
 
 \begin{itemize}
     \item Only one graph can be described in one generator file.
-    \item Graph can be named by \pl{name/1}. If name is omitted name of configuration file
+    \item Graph can be named by \pl{name/1}. If name is omitted name of configuration file name
         up to first dot is used.
     \item Input file is valid Prolog file.
     \item Custom predicates can be internally used in configuration file.
@@ -354,9 +352,11 @@ For further information of \gv{} and full syntax of \pl{.dot} files, consult \ur
 \label{sec:computing-time}
 
 The input time format \pl{YYYY-MM-DD+HH:MM} is internally converted to a single number,
-representing the number of minutes passed since \pl{1970-01-01+00:00}. 
-Similar to UNIX time. Time before this date is represented by a negative number.
- 
+representing the number of minutes passed since \pl{2013-03-13+19:00}. 
+Similar to UNIX time, but the \textit{Dynamic Graph Epoch} is counted from its birth - the time of registration
+(before registration it was not guaranteed to \textit{live}).
+If the user is in desperate need and uses timestamps before the \textit{Dynamic-Graph-Epoch}, 
+it will internally be represented by a negative number (try not to do it, DynamicGraph will get grumpy).
 
 \subsection{Graph representation}
 \label{sec:computing-graph} 
@@ -460,7 +460,6 @@ continues with next graph.
     \EndFor
 \end{algorithmic}
 
-\section{Examples}
 \section{Example CLI session}
 \label{sec:example-cli}
 \verbatiminput{session.txt}
