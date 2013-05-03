@@ -7,6 +7,7 @@
 
 :- use_module( library( lists ) ).
 :- use_module( queue ).
+:- use_module( utility ).
 
 graphGenerate :- graphGenerate( user ).
 
@@ -37,4 +38,34 @@ checkValidity :- clause( vertices(_), _ ), clause( edges(_,_), _ ), clause( newE
     , clause( removeEdge(_,_,_), _ ), clause( duration(_,_), _ ).
 
 % TODO
-runGenerator.
+runGenerator :-
+      getEdges( Edges )
+    , write( Edges )
+    , queueFromList( Edges, Q )
+    , duration( FT, TT )
+    , !
+    , timeToInt( FT, FromTime )
+    , timeToInt( TT, ToTime )
+    , genForEachMinute( FromTime, ToTime, Q ).
+
+getEdges( Edges ) :- vertices( V ), !, V1 is V - 1, getEdges( V1, V1, Edges ).
+
+getEdges( 0, 0, [] ).
+getEdges( F, F, Edges ) :- vertices( V ), !, F1 is F - 1, V1 is V - 1, getEdges( F1, V1, Edges ).
+getEdges( F, T, [ e( F, T ) | Edges ] ) :- F < T, !, T1 is T - 1, getEdges( F, T1, Edges ).
+
+genForEachMinute( To, To, _ ).
+genForEachMinute( From, To, Q ) :-
+      genMinute( From, Q, Q1 )
+    , !
+    , F1 is From + 1
+    , genForEachMinute( F1, To, Q1 ).
+
+genMinute( Minute, Q, OutQ ) :-
+      removeEdges( Minute, Q, Q1 )
+    , newEdge( Minute, Probability )
+    , emptyQueue( Qa )
+    , genNonEmptyQueue( Q1, Qa, Probability, OutQ ).
+    , true.
+
+genNonEmptyQueue( Q, Qa, Probability, OutQ ). 
