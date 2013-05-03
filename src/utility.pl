@@ -3,7 +3,7 @@
 % part of DynamicGraph
 % 
 
-:- module( utility, [] ).
+:- module( utility, [timeToInt/2, intToTime/2, time/2] ).
     
 :- use_module(library(system)).
           
