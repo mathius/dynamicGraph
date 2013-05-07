@@ -10,13 +10,13 @@
 :- use_module( utility ).
 
 % isQueue( +Queue )
-isQueue( queue( Front, Back ) ) :- is_list( Front ), is_list( Back ).
+isQueue( queue( _, _ ) ).
 
 % emptyQueue( ?Queue )
 emptyQueue( queue( [], [] ) ).
 
 % queueFromList( +List, -Queue )
-queueFromList( XS, queue( XS, [] ) ) :- is_list( XS ).
+queueFromList( XS, queue( XS, [] ) ).
 
 % enqueue( +Value, +Queue, -QueueWithValue )
 enqueue( X, Queue, QueueWithValue ) :-
