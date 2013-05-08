@@ -25,21 +25,21 @@ list of valid user commands and their mapping to internal predicates
 @param -Command             name of the internal predicate to call
                             arity must be the same, arguments from the user are used
 */
-validCommand( graphLoad, 1, notInplemented ).
-validCommand( graphGenerate, Arity, notInplemented ) :- member( Arity, [0,1] ).
-validCommand( graph, 0, notInplemented ).
-validCommand( timeBegin, Arity, notInplemented ) :- member( Arity, [0,1] ).
-validCommand( timeEnd, Arity, notInplemented ) :- member( Arity, [0,1] ).
-validCommand( timeInterval, Arity, notInplemented ) :- member( Arity, [0,1,2] ).
-validCommand( time, 0, notInplemented ).
-validCommand( graphviz, 1, notInplemented ).
-validCommand( graphvizOff, 0, notInplemented ).
-validCommand( statsNodes, 0, notInplemented ).
-validCommand( statsEdges, 0, notInplemented ).
-validCommand( statsComponents, 0, notInplemented ).
-validCommand( statsProgress, 0, notInplemented ).
-validCommand( statsAnalyseNode, 1, notInplemented ).
-validCommand( statsMaxComponent, 0, notInplemented ).
+validCommand( graphLoad, 1, notImplemented ).
+validCommand( graphGenerate, Arity, notImplemented ) :- member( Arity, [0,1] ).
+validCommand( graph, 0, notImplemented ).
+validCommand( timeBegin, Arity, notImplemented ) :- member( Arity, [0,1] ).
+validCommand( timeEnd, Arity, notImplemented ) :- member( Arity, [0,1] ).
+validCommand( timeInterval, Arity, notImplemented ) :- member( Arity, [0,1,2] ).
+validCommand( time, 0, notImplemented ).
+validCommand( graphviz, 1, notImplemented ).
+validCommand( graphvizOff, 0, notImplemented ).
+validCommand( statsNodes, 0, notImplemented ).
+validCommand( statsEdges, 0, notImplemented ).
+validCommand( statsComponents, 0, notImplemented ).
+validCommand( statsProgress, 0, notImplemented ).
+validCommand( statsAnalyseNode, 1, notImplemented ).
+validCommand( statsMaxComponent, 0, notImplemented ).
 validCommand( help, 0, printHelp ).
 validCommand( quit, 0, quit ).
 % shothand versions
@@ -130,14 +130,14 @@ cliMain :-
 prints a message informing the user of functionality not yet implemented
 always succeeds
 */
-notInplemented :-
-        messages( notInplemented, Message ),
+notImplemented :-
+        messages( notImplemented, Message ),
         outputMessage( error, Message ).
-notInplemented(_) :-
-        messages( notInplemented, Message ),
+notImplemented(_) :-
+        messages( notImplemented, Message ),
         outputMessage( error, Message ).
-notInplemented(_,_) :-
-        messages( notInplemented, Message ),
+notImplemented(_,_) :-
+        messages( notImplemented, Message ),
         outputMessage( error, Message ).
 
 /* quit/0
