@@ -3,9 +3,19 @@
 % This module contains general functions useful throughout the project.
 %
 % date: 2013-05-08
-% authors: Martin Ukrop (concatenateAtoms/2)
+% responsible for exported functions:
+%       Martin Ukrop (concatenateAtoms/2, numberToAtom/2)
 %
-:- module( utilities, [concatenateAtoms/2] ).
+:- module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
+
+/* numberToAtom( +Number, -Atom )
+convert number to atom
+@param +Number          number to convert, must be instantianed
+@param -Atom            atom of the number
+*/
+numberToAtom( Number, Atom ) :-
+        number_chars( Number, Chars ),
+        atom_chars( Atom, Chars ).
 
 /* concatenateAtoms( +ListOfAtoms, -Output )
 concatenates atoms in the list to a single atom

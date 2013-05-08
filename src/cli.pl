@@ -3,20 +3,14 @@
 % This module contains predicates emulating the command line interface of DynamicGraph
 % 
 % date: 2013-05-08
-% authors: Martin Ukrop (outputMessage/2, cliMain/0)
+% responsible for exported functions:
+%       Martin Ukrop (cliMain/0)
 %
-:- module( cli, [outputMessage/2, cliMain/0] ).
-:- use_module( texts ).
-:- use_module( utilities ).
-
-/* messagePrefix( +Type, -Prefix )
-get a prefix for cli messages
-@param +Type                type of prefix (info, error, question)
-@param -Prefix              prefix as an atom
-*/
-messagePrefix( info, '# ' ).
-messagePrefix( error, '! ' ).
-messagePrefix( question, '? ' ).
+:- module( cli, [cliMain/0] ).
+:- use_module( messaging, [outputMessage/2, messages/2] ).
+:- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
+:- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
+:- use_module( graph, [test/0] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -27,11 +21,14 @@ list of valid user commands and their mapping to internal predicates
 */
 validCommand( graphLoad, 1, notImplemented ).
 validCommand( graphGenerate, Arity, notImplemented ) :- member( Arity, [0,1] ).
-validCommand( graph, 0, notImplemented ).
-validCommand( timeBegin, Arity, notImplemented ) :- member( Arity, [0,1] ).
-validCommand( timeEnd, Arity, notImplemented ) :- member( Arity, [0,1] ).
-validCommand( timeInterval, Arity, notImplemented ) :- member( Arity, [0,1,2] ).
-validCommand( time, 0, notImplemented ).
+validCommand( graph, 0, test ).
+validCommand( timeBegin, 0, printTimeInterval ).
+validCommand( timeBegin, 1, setBeginTime ).
+validCommand( timeEnd, 0, printTimeInterval ).
+validCommand( timeEnd, 1, setEndTime ).
+validCommand( timeInterval, 0, printTimeInterval ).
+validCommand( timeInterval, 2, setTimeInterval ).
+validCommand( time, 0, printTimeInterval ).
 validCommand( graphviz, 1, notImplemented ).
 validCommand( graphvizOff, 0, notImplemented ).
 validCommand( statsNodes, 0, notImplemented ).
@@ -76,37 +73,10 @@ validateUserInput( UserTerm, Command ) :-
 validateUserInput( UserTerm, _ ) :-
         functor( UserTerm, Functor, Arity ),
         messages( invalidCommand, [Message] ),
-        number_chars( Arity, ArityChars ),
-        atom_chars( ArityAtom, ArityChars ),
+        numberToAtom( Arity, ArityAtom ),
         concatenateAtoms( [Message,Functor,'/',ArityAtom], MessageFinal ), 
         outputMessage( error, [MessageFinal] ),
         fail.
-
-/* outputMessage( +Type, +ListOfLines )
-write a message to user cli with appropriate prefix
-@param +Type                type of message, determines the prefix (info, error, question)
-@param +ListOfLines         message formated as a list of atoms
-*/
-outputMessage( Type, ListOfLines) :-
-        telling( OldOutputStream ),
-        told,
-        tell( user ),
-        messagePrefix( Type, Prefix ),
-        output( Prefix, ListOfLines ),
-        told,
-        tell( OldOutputStream ).
-
-/* outputMessage( +Prefix, +ListOfLines )
-write message to currently open output stream with each line prefixed by Prefix
-@param +Prefix              atom, prefix for each message line
-@param +ListOfLines         message formated as a list of atoms
-*/
-output( _, []).
-output( Prefix, [Message|Rest] ) :-
-        write( Prefix ),
-        write( Message ),
-        nl,
-        output( Prefix, Rest ).
 
 /* cliMain/0
 main cli loop
@@ -115,6 +85,7 @@ intro -> loop for command -> outro
 cliMain :-
         messages( intro, IntroString ),
         outputMessage( info, IntroString ),
+        timeInterval( 0, 0),
         see( user ),
         repeat,
                 read( UserTerm ),
@@ -125,6 +96,10 @@ cliMain :-
         seen,
         messages( outro, OutroString ),
         outputMessage( info, OutroString ).
+
+% ======================================================================
+% HELPER PREDICATES FOR USER ACTIONS
+% ======================================================================
 
 /* notImplemented/0, notImplemented/1, notImplemented/2
 prints a message informing the user of functionality not yet implemented
@@ -140,14 +115,30 @@ notImplemented(_,_) :-
         messages( notImplemented, Message ),
         outputMessage( error, Message ).
 
-/* quit/0
-quit command, always succeeds
-*/
+% quit command, always succeeds
 quit.
-
-/* printHelp/0
-prints command summary to user output
-*/
+% prints command summary to user output
 printHelp :-
         messages( help, Message ),
         outputMessage( info, Message ).
+% prints current time interval
+printTimeInterval :-
+        messages( timeInterval, [Message] ),
+        timeInterval( TimeBegin, TimeEnd ),
+        timeToAtom( TimeBegin, TimeBeginA ),
+        timeToAtom( TimeEnd, TimeEndA ),
+        concatenateAtoms( [Message,TimeBeginA,' to ',TimeEndA], MessageFinal ),
+        outputMessage( info, [MessageFinal] ).
+% sets begin time of time interval
+setBeginTime( TimeFunctor ) :-
+        timeConversion( Time, TimeFunctor ),
+        timeInterval( Time, _ ).
+% sets end time of time interval
+setEndTime( TimeFunctor ) :-
+        timeConversion( Time, TimeFunctor ),
+        timeInterval( _, Time ).
+% sets both begin and end time of time interval
+setEndTime( TimeBeginFunctor, TimeBeginFunctor ) :-
+        timeConversion( TimeBegin, TimeBeginFunctor ),
+        timeConversion( TimeEnd, TimeBeginFunctor ),
+        timeInterval( TimeBegin, TimeEnd ).

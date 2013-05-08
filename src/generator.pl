@@ -3,7 +3,8 @@
 % Description to be added.
 %
 % date: 2013-05-08
-% authors: Vladimir Still (graphGenerate/1, graphGenerate/0)
+% responsible for exported functions:
+%       Vladimir Still (graphGenerate/1, graphGenerate/0)
 %
 :- module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
 

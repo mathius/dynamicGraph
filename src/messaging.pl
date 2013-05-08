@@ -3,9 +3,45 @@
 % This module groups all user texts used in DynamicGraph.
 % 
 % date: 2013-05-08
-% authors: Martin Ukrop (messages/2)
+% responsible for exported functions:
+%       Martin Ukrop (outputMessage/2, messages/2)
 %
-:- module( texts, [messages/2] ).
+:- module( messsaging, [outputMessage/2, messages/2] ).
+
+/* outputMessage( +Type, +ListOfLines )
+write a message to user cli with appropriate prefix
+@param +Type                type of message, determines the prefix (info, error, question)
+@param +ListOfLines         message formated as a list of atoms
+*/
+outputMessage( Type, ListOfLines) :-
+        telling( OldOutputStream ),
+        told,
+        tell( user ),
+        messagePrefix( Type, Prefix ),
+        output( ListOfLines, Prefix ),
+        told,
+        tell( OldOutputStream ).
+
+/* output( +ListOfLines, +Prefix )
+write message to currently open output stream with each line prefixed by Prefix
+@param +ListOfLines         message formated as a list of atoms
+@param +Prefix              atom, prefix for each message line
+*/
+output( [], _ ).
+output( [Message|Rest], Prefix ) :-
+        write( Prefix ),
+        write( Message ),
+        nl,
+        output( Rest, Prefix ).
+
+/* messagePrefix( +Type, -Prefix )
+get a prefix for cli messages
+@param +Type                type of prefix (info, error, question)
+@param -Prefix              prefix as an atom
+*/
+messagePrefix( info, '# ' ).
+messagePrefix( error, '! ' ).
+messagePrefix( question, '? ' ).
 
 /* messages( +MessageIdentifier, -Message )
 get a user message
@@ -63,4 +99,16 @@ messages( invalidCommand, % invalid command read from user
         ).
 messages( notImplemented, % functions not yet implemented in dynamicGraph
           ['This function is not yet impleneted.','Stay tuned for updates :-}.']
+        ).
+messages( timeBeginChange, % beginning of the time interval was changed
+          ['Time interval beginning set: ']
+        ).
+messages( timeEndChange, % end of the time interval was changed
+          ['Time interval end set: ']
+        ).
+messages( timeInterval, % printing time interval
+          ['Current time interval: '] 
+        ).
+messages( invalidTimestamp, % timestamp provided is invalid
+          ['Invalid timestamp.']
         ).
