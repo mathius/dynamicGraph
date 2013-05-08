@@ -1,14 +1,17 @@
-% SICStus prolog
+% DynamicGraph, generator module
 %
-% part of DynamicGraph
+% Description to be added.
 %
-
+% date: 2013-05-08
+% authors: Vladimir Still (graphGenerate/1, graphGenerate/0)
+%
 :- module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
 
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utility ).
+:- use_module( utilities ).
+:- use_module( time ).
 
 graphGenerate :- graphGenerate( user ).
 

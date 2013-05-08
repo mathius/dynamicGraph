@@ -1,12 +1,14 @@
-% SICStus Prolog
-% 
-% part of DynamicGraph
-% 
+% DynamicGraph, time module
+%
+% Description to be added.
+%
+% date: 2013-05-08
+% authors: Andrej Krejcir (time/2)
+%
+:- module( time, [time/2] ).
 
-:- module( utility, [timeToInt/2, intToTime/2, time/2] ).
-    
-:- use_module(library(system)).
-          
+:- use_module( library( system ) ).
+
 % minutes form 2013-3-13+00:00
 timeToInt(Year-Month-Day+Hour:Min,OutTime):-
     datime(UnixTime, datime(Year,Month,Day,Hour,Min,0)),

@@ -1,13 +1,15 @@
-% SICStus Prolog
+% DynamicGraph, queue module
 %
-% part of DynamicGraph
-% 
-
+% Description to be added.
+%
+% date: 2013-05-08
+% authors: Vladimir Still (isQueue/1, emptyQueue/1, queueFromList/2, enqueue/3, dequeue/3, mergeQueue/3)
+%
 :- module( queue, [ isQueue/1, emptyQueue/1, queueFromList/2
                   , enqueue/3, dequeue/3, mergeQueue/3 ] ).
 
 :- use_module( library( lists ) ).
-:- use_module( utility ).
+:- use_module( time ).
 
 % isQueue( +Queue )
 isQueue( queue( _, _ ) ).
