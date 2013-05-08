@@ -54,8 +54,8 @@ getGenerator( gen( Edges, QA, FromTime, ToTime, [], [] ) ) :-
     , queueFromList( Edges, QA )
     , duration( FT, TT )
     , !
-    , timeToInt( FT, FromTime )
-    , timeToInt( TT, ToTime ).
+    , time( FromTime, FT )
+    , time( ToTime, TT ).
 
 getClosed( gen( _,_,_,_,_, ClosedEdges ), ClosedEdges ).
 setClosed( gen( E, QA, FT, TT, OE, _CE ), ClosedEdges, gen( E, QA, FT, TT, OE, ClosedEdges ) ).
@@ -85,6 +85,12 @@ genForEachMinute( Gen, GenOut ) :-
       genMinute( Gen, Gen0 )
     , !
     , write( ':' )
+    %%%%%%%%%%%%%%%%
+    , getFromTime( Gen0, Minute )
+    , time( Minute, M )
+    , write( M )
+    , nl
+    %%%%%%%%%%%%%%%%
     , addMinute( Gen0, Gen1 )
     , genForEachMinute( Gen1, GenOut ).
 
@@ -103,7 +109,17 @@ removeEdges( GenIn, GenOut ) :-
     , getFromTime( GenIn, Minute )
     , removeEdges( Minute, OS, OSOut, Closed, C )
     , setOpen( GenIn, OSOut, Gen1 )
-    , setClosed( Gen1, Closed, GenOut ).
+    , setClosed( Gen1, Closed, Gen2 )
+    , queueClosed( Gen2, Closed, C, GenOut ).
+
+% queue up to edges closed before
+queueClosed( G, [], _, G ).
+queueClosed( G, [ E | _ ], [ E | _ ], G ).
+queueClosed( G0, [ e( X, Y, _, _ ) | ES ], Before, GOut ) :- 
+      getQueue( G0, Q )
+    , enqueue( e( X, Y ), Q, Q1 )
+    , setQueue( G0, Q1, G1 )
+    , queueClosed( G1, ES, Before, GOut ).
 
 removeEdges( _, [], [], C, C ) :- !. % finally append already closed edges and finish opened
 % edge is removed -> it is closed
@@ -161,7 +177,11 @@ genNonEmptyQueue( G, Qa, Probability, Min, Cnt, Max, GOut ) :- % not adding
     , setQueue( G, QA1, G1 )
     , genNonEmptyQueue( G1, Qa1, Probability, Min, Cnt, Max, GOut ).
 
-fillMinimum( G, Qa, _, _, _, G ) :- emptyQueue( Qa ), !. % ??? Hm
+fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :-
+      emptyQueue( Qa )
+    , !
+    , getQueue( G, Q )
+    , ( emptyQueue( Q ), G = GOut ; fillMinimum( G, Q, Probability, Min, Cnt, GOut ) ).
 % generate up to minimum, generator queue is empty
 fillMinimum( G, Qa, _, Min, Cnt, GOut ) :-
       Min =< Cnt
@@ -196,7 +216,7 @@ writeFile( ES ) :-
 
 writeFile1( [] ).
 writeFile1( [ e( V1, V2, F, T ) | ES ] ) :-
-      intToTime( F, From )
+      time( F, From )
     , Dur is T - F
     , write( e( V1, V2, From, Dur ) )
     , write( '.' )
