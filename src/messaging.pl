@@ -112,3 +112,21 @@ messages( timeInterval, % printing time interval
 messages( invalidTimestamp, % timestamp provided is invalid
           ['Invalid timestamp.']
         ).
+messages( graphLoadSuccess, % graph was successfully loaded
+          ['Successfully loaded: ']
+        ).
+messages( graphLoadError, % graph was not successfully loaded, no graph loaded
+          ['Could not load graph.','No graph is loaded.']
+        ).
+messages( graphInfo,
+          ['Graph loaded: ',' -> ',', from ',' to ']
+        ).
+messages( noGraph,
+          ['No graph is loaded.','Load graph using \'graphLoad/1\' command.']
+        ).
+messages( dupliciteGraphName,
+          ['Graph name is defined multiple times.','Old graph name: ','Colliding name: ']
+        ).
+messages( invalidGraphTerm,
+          ['Invalid term in graph file: ']
+        ).
