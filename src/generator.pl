@@ -12,7 +12,7 @@
 :- use_module( library( random ) ).
 :- use_module( queue ).
 :- use_module( utilities ).
-:- use_module( time ).
+:- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
 
 graphGenerate :- graphGenerate( user ).
 
@@ -55,8 +55,8 @@ getGenerator( gen( Edges, QA, FromTime, ToTime, [], [] ) ) :-
     , queueFromList( Edges, QA )
     , duration( FT, TT )
     , !
-    , time( FromTime, FT )
-    , time( ToTime, TT ).
+    , timeConversion( FromTime, FT )
+    , timeConversion( ToTime, TT ).
 
 getClosed( gen( _,_,_,_,_, ClosedEdges ), ClosedEdges ).
 setClosed( gen( E, QA, FT, TT, OE, _CE ), ClosedEdges, gen( E, QA, FT, TT, OE, ClosedEdges ) ).
@@ -88,7 +88,7 @@ genForEachMinute( Gen, GenOut ) :-
     , write( ':' )
     %%%%%%%%%%%%%%%%
     , getFromTime( Gen0, Minute )
-    , time( Minute, M )
+    , timeConversion( Minute, M )
     , write( M )
     , nl
     %%%%%%%%%%%%%%%%
@@ -217,7 +217,7 @@ writeFile( ES ) :-
 
 writeFile1( [] ).
 writeFile1( [ e( V1, V2, F, T ) | ES ] ) :-
-      time( F, From )
+      timeToAtom( F, From )
     , Dur is T - F
     , write( e( V1, V2, From, Dur ) )
     , write( '.' )
