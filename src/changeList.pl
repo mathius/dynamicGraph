@@ -9,7 +9,7 @@
 :- module( changeList, [ getChangeList/1 ] ).
 
 :- use_module( library( lists ) ).
-:- use_module( graph, [ edge/4, graphDuration/2 ] ).
+:- use_module( graph, [ edge/4 ] ).
 
 
 
@@ -35,12 +35,12 @@ withEnd( [ e( X, Y, S, E ) | ES ], [ E - e( X, Y, S, E ) | WES ] ) :-
     withEnd( ES, WES ).
 
 % based on http://ai.ia.agh.edu.pl/wiki/pl:prolog:pllib:findall
-findEdges( FromTime, ToTime, List)  :-
+findEdges( List)  :-
       graph:edge( X, Y, Z, W )                         % Find a solution
-      , assertz( queue( e( X, Y, Z, W ) )                 % Assert it
+      , assertz( queue( e( X, Y, Z, W ) ) )                 % Assert it
       , fail                                  % Try to find more solutions
     ; assertz( queue( bottom ) )            % Mark end of solutions
-      , collect( FromTime, ToTime, List ).                      % Collect the solutions 
+      , collect( List ).                      % Collect the solutions 
 
 collect( L )  :-
       retract( queue( X ) )     % Retract next solution
@@ -52,41 +52,55 @@ collect( L )  :-
 
 % no empty case -> that would be empty graph
 geneateChanges( Starts, Ends, StartOfTime, EndOfTime, Changes ) :-
-      ( Starts = [ e( _, _, S, _ ) | _ ], Ends = [ e( _, _, _, E ) | _ ], min( S, E, StartOfTime ) 
-      ; Starts = [ e( _, _, StartOfTime, _ ) | _ ], Ends = []
-      ; Starts = [], Ends = [ e( _, _, StartOfTime, _ ) | _ ]
-      )
+    (   Starts = [ e( _, _, S, _ ) | _ ]
+      , Ends = [ e( _, _, _, E ) | _ ]
+      , min( S, E, StartOfTime )
+      , !
+    ;   Starts = [ e( _, _, StartOfTime, _ ) | _ ]
+      , Ends = []
+      , !
+    ;   Starts = []
+      , Ends = [ e( _, _, StartOfTime, _ ) | _ ]
+    )
     , geneateChanges2( StartOfTime, Starts, Ends, Changes, EndOfTime ).
 
 geneateChanges2( EndOfTime, [], [], [], EndOfTime ).
-geneateChanges2( Minute, Starts, Ends, [ minute( Min, Changes ) | MS ], EndOfTime ) :-
+geneateChanges2( Minute, Starts, Ends, [ minute( Minute, Changes ) | MS ], EndOfTime ) :-
       changesInMinute( Minute, Starts, Ends, Minute1, Starts1, Ends1, Changes )
     ,
-    ( Minute == Minute1, EndOfTime = Minute % we reached end of graph
-    ; geneateChanges2( Minute1, Starts1, Ends1, MS, EndOfTime )
+    (   Minute == Minute1, EndOfTime = Minute, MS = []
+      , ! % we reached end of graph
+    ;   geneateChanges2( Minute1, Starts1, Ends1, MS, EndOfTime )
     ).
 
 changesInMinute( Minute, Starts, Ends, Minute1, Starts1, Ends1, Changes ) :-
       starts( Minute, Starts, M1S, Starts1, Chan1 )
     , ends( Minute, Ends, Chan1, M1E, Ends1, Changes )
-    , min( M1S, M1E, Minute1 ).
+    ,
+    (   min( M1S, M1E, Minute1 )
+      , Minute1 > Minute
+      , !
+    ;   max( M1S, M1E, Minute1 )
+    ).
 
 starts( Minute, [], Minute, [], [] ) :- !.
 starts( Minute, SS, NextMinute, SS, [] ) :-
       SS = [ e( _, _, NextMinute, _ ) | _ ]
     , Minute < NextMinute
     , !.
-starts( Minute, [ e( X, Y, _, _ ) | SS ], NextMinute, [ addEdge( X, Y ) | CS ] ) :-
-    starts( Minute, SS, NextMinute, CS ).
+starts( Minute, [ e( X, Y, _, _ ) | SS ], NextMinute, NextStarts, [ addEdge( X, Y ) | CS ] ) :-
+    starts( Minute, SS, NextMinute, NextStarts, CS ).
 
 ends( Minute, [], Starts, Minute, [], Starts ) :- !.
-ends( Minute, ES, NextMinute, ES, [] ) :- 
+ends( Minute, ES, Starts, NextMinute, ES, Starts ) :- 
       ES = [ e( _, _, _, NextMinute ) | _ ]
     , Minute < NextMinute
     , !.
-ends( Minute, [ e( X, Y, _, _ ) | ES ], NextMinute, [ deleteEdge( X, Y ) | CS ] ) :-
-    ends( Minute, ES, NextMinute, CS ).
+ends( Minute, [ e( X, Y, _, _ ) | ES ], Starts, NextMinute, NextEnds, [ deleteEdge( X, Y ) | CS ] ) :-
+    ends( Minute, ES, Starts, NextMinute, NextEnds, CS ).
 
 min( X, Y, Z ) :- X > Y, !, Z = Y.
 min( X, _, X ).
 
+max( X, Y, Z ) :- X < Y, !, Z = Y.
+max( X, _, X ).
