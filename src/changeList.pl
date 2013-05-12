@@ -1,6 +1,7 @@
 % DynamicGraph, chageList module
 %
-% Description to be added.
+% Exports single predicate getChangeList which generates list of changes
+% (of graph in database)
 %
 % date: 2013-05-12
 % responsible for exported functions:
@@ -12,7 +13,18 @@
 :- use_module( graph, [ edge/4 ] ).
 
 
-
+/* getChangeList( -ChangeList )
+ generates list of changes of graph in database
+ @param -ChangeList    list of changes in following format:
+                 changeList( StartOfTime, EndOfTime, Changes ) where
+                  - StartOfTime is first occurence of first edge
+                  - EndOfTime is last occurence of last edge
+                  - Changes is list of terms in format
+                      minute( Minute, ChangesInMimute ) where
+                      - Minute is imute of changes ocuring
+                      - ChangesInMimute is list of either
+                        addEdge( X, Y ) or deleteEdge( X, Y ).
+*/
 getChangeList( changeList( StartOfTime, EndOfTime, Changes ) ) :-
       findEdges( List )
     , withStart( List, WSList )
