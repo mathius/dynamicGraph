@@ -11,6 +11,7 @@
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( graph, [test/0] ).
+:- use_module( stats, [statsNodes/0] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -31,7 +32,7 @@ validCommand( timeInterval, 2, setTimeInterval ).
 validCommand( time, 0, printTimeInterval ).
 validCommand( graphviz, 1, notImplemented ).
 validCommand( graphvizOff, 0, notImplemented ).
-validCommand( statsNodes, 0, notImplemented ).
+validCommand( statsNodes, 0, statsNodes ).
 validCommand( statsEdges, 0, notImplemented ).
 validCommand( statsComponents, 0, notImplemented ).
 validCommand( statsProgress, 0, notImplemented ).

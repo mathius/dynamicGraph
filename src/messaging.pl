@@ -112,3 +112,18 @@ messages( timeInterval, % printing time interval
 messages( invalidTimestamp, % timestamp provided is invalid
           ['Invalid timestamp.']
         ).
+messages( numberOfNodes, % used for printing node statistics
+          ['Number of nodes in graph: ']
+        ).
+messages( nodeName, % used for printing node statistics
+          ['Name: ']
+        ).
+messages( nodeDegree, % used for printing node statistics
+          ['Degree: ']
+        ).
+messages( nodeMax, % used for printing node statistics
+          ['Node with maximum degree is: ']
+        ).
+messages( nodeMin, % used for printing node statistics
+          ['Node with minimum degree is: ']
+        ).

@@ -13,8 +13,8 @@
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 
-/*
-TBD
+/* timeToInt(+TimeFunctor, -TimeNumber)
+conversion from time functor to time number
 */
 % minutes form 2013-3-13+00:00
 timeToInt(Year-Month-Day+Hour:Min,OutTime):-
@@ -24,9 +24,9 @@ timeToInt(Year-Month-Day+Hour:Min,OutTime):-
     StartMin is floor(StartTime / 60),
     OutTime is UnixMin - StartMin.
 
-/*
-TBD
-  */
+/* intToTime(+TimeNumber, - TimeFunctor)
+conversion form time number to time functor
+*/
 intToTime(Time, Year-Month-Day+Hour:Min):-
     datime(StartTime, datime(2013,3,13,19,0,0)),
     UnixTime is StartTime + Time * 60,
