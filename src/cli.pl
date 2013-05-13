@@ -10,8 +10,8 @@
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
-:- use_module( graph, [test/0] ).
 :- use_module( stats, [statsNodes/0] ).
+:- use_module( graph, [loadGraph/1, printGraph/0] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -20,9 +20,9 @@ list of valid user commands and their mapping to internal predicates
 @param -Command             name of the internal predicate to call
                             arity must be the same, arguments from the user are used
 */
-validCommand( graphLoad, 1, notImplemented ).
+validCommand( graphLoad, 1, loadGraph ).
 validCommand( graphGenerate, Arity, notImplemented ) :- member( Arity, [0,1] ).
-validCommand( graph, 0, test ).
+validCommand( graph, 0, printGraph ).
 validCommand( timeBegin, 0, printTimeInterval ).
 validCommand( timeBegin, 1, setBeginTime ).
 validCommand( timeEnd, 0, printTimeInterval ).

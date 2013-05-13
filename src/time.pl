@@ -7,7 +7,7 @@
 %       Andrej Krejcir (timeConversion/2)
 %       Martin Ukrop (timeInterval/2, timeToAtom/2)
 %
-:- module( time, [timeConversion/2, timeInterval/2, timeToAtom/2, timeIntervalBegin/1, timeIntervalEnd/1] ).
+:- module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 
 :- use_module( library( system ) ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
@@ -88,7 +88,7 @@ setTimeIntervalBegin( Time ) :- % get time
 setTimeIntervalBegin( Time ) :- % set time
         ( retract( timeIntervalBegin( _ ) ) ; true), % retract old time if applicable, succeed if not
         !, % extremely importat, otherwise we might backtrack through retract
-        assert( timeIntervalBegin( Time ) ),
+        assertz( timeIntervalBegin( Time ) ),
         messages( timeBeginChange, [Message] ),
         timeToAtom( Time, TimeHumanReadable ),
         concatenateAtoms( [Message,TimeHumanReadable], MessageFinal),
@@ -106,7 +106,7 @@ setTimeIntervalEnd( Time ) :- % get time
 setTimeIntervalEnd( Time ) :- % set time
         ( retract( timeIntervalEnd( _ ) ) ; true), % retract old time if applicable, succeed if not
         !, % extremely importat, otherwise we might backtrack through retract
-        assert( timeIntervalEnd( Time ) ),
+        assertz( timeIntervalEnd( Time ) ),
         messages( timeEndChange, [Message] ),
         timeToAtom( Time, TimeHumanReadable ),
         concatenateAtoms( [Message,TimeHumanReadable], MessageFinal),

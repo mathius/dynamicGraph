@@ -127,3 +127,21 @@ messages( nodeMax, % used for printing node statistics
 messages( nodeMin, % used for printing node statistics
           ['Node with minimum degree is: ']
         ).
+messages( graphLoadSuccess, % graph was successfully loaded
+          ['Successfully loaded: ']
+        ).
+messages( graphLoadError, % graph was not successfully loaded, no graph loaded
+          ['Could not load graph.','No graph is loaded.']
+        ).
+messages( graphInfo,
+          ['Graph loaded: ',' -> ',', from ',' to ']
+        ).
+messages( noGraph,
+          ['No graph is loaded.','Load graph using \'graphLoad/1\' command.']
+        ).
+messages( dupliciteGraphName,
+          ['Graph name is defined multiple times.','Old graph name: ','Colliding name: ']
+        ).
+messages( invalidGraphTerm,
+          ['Invalid term in graph file: ']
+        ).
