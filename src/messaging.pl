@@ -126,7 +126,23 @@ messages( nodeMax, % used for printing node statistics
         ).
 messages( nodeMin, % used for printing node statistics
           ['Node with minimum degree is: ']
+        ).                                             
+messages( edgeNum, % used for printing edge statistics
+          ['Number of edges in graph: ']
         ).
+messages( edgeInfo1, % used for printing edge statistics
+          ['Edge from: ', ' to ']
+        ).
+messages( edgeInfo2, % used for printing edge statistics
+          ['Start time: ', 'End time:   ', ' -- ', 'Interval: ' , ' min']
+        ).
+messages( edgeMax, % used for printing edge statistics
+          ['Edge with longest time interval:']
+        ).
+messages( edgeMin, % used for printing edge statistics
+          ['Edge with shortest time interval:']
+        ).
+                
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']
         ).
