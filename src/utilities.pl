@@ -40,14 +40,19 @@ concatenateAtoms0( [Atom|Rest], AccumulatorPrefix, Output ) :-
         atom_concat( AccumulatorPrefix, Atom, AccumulatorPrefix2 ),
         concatenateAtoms0( Rest, AccumulatorPrefix2, Output ).
 
+/* openFileForReading( +File )
+opens specified file for reading
+non-existent files are handled gracefully, originaly opened input stream is kept
+@param +File    file to load
+*/
 openFileForReading( File ) :-
+        seeing( OldInputStream ),
         on_exception( error(existence_error(_,_),existence_error(_,_,_,_,_)),
                       see( File ), 
-                      ( fileNotOpen( File ),
-                        fail )
+                      (         messages( fileNotOpen, [Message] ),
+                                concatenateAtoms( [Message,'\'',File,'\''], MessageFinal ),
+                                outputMessage( error, [MessageFinal] ),
+                                see( OldInputStream ),
+                                fail 
+                      )
                     ).
-
-fileNotOpen( File ) :-
-        messages( fileNotOpen, [Message] ),
-        concatenateAtoms( [Message,'\'',File,'\''], MessageFinal ),
-        outputMessage( error, [MessageFinal] ).

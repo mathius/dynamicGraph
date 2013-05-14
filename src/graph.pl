@@ -2,7 +2,7 @@
 %
 % Module for loading graph from file, checking its consistency and printing it.
 %
-% date: 2013-05-12
+% date: 2013-05-14
 % responsible for exported functions:
 %       Martin Ukrop (graphName/1, edge/4, loadGraph/1, printGraph/0)
 %
@@ -47,6 +47,7 @@ graphName( GraphName ) :-
 /* loadGraph( +File )
 loads graph from given file
 if does not succeed (incorrect format of graph, not existent, ...) current graph is unloaded
+non-existent files are handled gracefully
 @param +File        name of the graph file, must be atomic
 */
 loadGraph( File ) :-
