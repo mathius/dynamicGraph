@@ -13,7 +13,7 @@
 :- use_module( stats, [statsNodes/0] ).
 :- use_module( graph, [loadGraph/1, printGraph/0] ).
 :- use_module( graphviz, [enableGraphviz/1, disableGraphviz/0] ).
-:- use_module( stats, [statsNodes/0, statsEdges/0] ).
+:- use_module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
 :- use_module( changeList, [ printChangeList/0 ] ).
 :- use_module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
 
@@ -41,7 +41,7 @@ validCommand( statsNodes, 0, statsNodes ).
 validCommand( statsEdges, 0, statsEdges ).
 validCommand( statsComponents, 0, notImplemented ).
 validCommand( statsProgress, 0, printChangeList ).
-validCommand( statsAnalyseNode, 1, notImplemented ).
+validCommand( statsAnalyseNode, 1, statsAnalyseNode ).
 validCommand( statsMaxComponent, 0, notImplemented ).
 validCommand( help, 0, printHelp ).
 validCommand( quit, 0, quit ).

@@ -142,6 +142,15 @@ messages( edgeMax, % used for printing edge statistics
 messages( edgeMin, % used for printing edge statistics
           ['Edge with shortest time interval:']
         ).
+messages( noNode, % used for printing node statistics
+          ['Node doesn\'t exist.']
+        ).    
+messages( nodeNeighbours, % used for printing node statistics
+          ['Connected edges:']
+        ).        
+messages( neighbourMsg, % used for printing node statistics
+          [' --> From ', ' to ', ' -- ', ' min']
+        ).
                 
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']

@@ -4,9 +4,9 @@
 % 
 % date: 2013-05-14
 % responsible for exported functions:
-%       Andrej Krejcir(statsNodes/0, statsEdges/0)
+%       Andrej Krejcir(statsNodes/0, statsEdges/0, statsAnalyseNode/1)
 %
-:- module( stats, [statsNodes/0, statsEdges/0] ).
+:- module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
 
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
@@ -16,7 +16,17 @@
                                                
 
 % utility
-id(X,X).
+
+filter(Pred, [], []).
+filter(Pred, [X|Rest], [X|Out]):-
+    call(Pred,X),!,
+    filter(Pred,Rest,Out).
+filter(Pred, [_|Rest], Out) :- filter(Pred, Rest, Out).
+
+map(Pred, [], []).
+map(Pred, [X|Rest], [Y|Out]):-
+    call(Pred,X,Y),!,
+    map(Pred, Rest, Out).
 
 listMax(Pred, [X|Rest], Out) :- listMax(Pred, Rest, X, Out).
 listMax(_Pred, [], Out, Out).
@@ -67,8 +77,8 @@ printNode(node(Name,Degree)):-
     concatenateAtoms([DegreeMsg, DegreeA], Msg2),
     outputMessage(info, [Msg1, Msg2]).
         
+        
 getListOfNodes(Edges,Out):- getListOfNodes(Edges, [], Out).
-
 getListOfNodes([],Out,Out).
 getListOfNodes([ed(X,Y,_,_)|Rest],Accum,Out):-
     updateNodeSet(X,Accum,Accum1),
@@ -77,16 +87,14 @@ getListOfNodes([ed(X,Y,_,_)|Rest],Accum,Out):-
     
     
 updateNodeSet(Name, [], [ node(Name,1) ]).
-updateNodeSet(Name, [node(Name,N)|Rest], [node(Name,N1)|Rest]):- 
-    N1 is N + 1.
-updateNodeSet(Name, [X|Rest], [X|Out]):-
-    updateNodeSet(Name, Rest, Out).    
+updateNodeSet(Name, [node(Name,N)|Rest], [node(Name,N1)|Rest]):- N1 is N + 1.
+updateNodeSet(Name, [X|Rest], [X|Out]):- updateNodeSet(Name, Rest, Out).    
     
         
 printNodes([]).
 printNodes([N|Rest]):-
     printNode(N),
-    outputMessage(info,['']),
+    outputMessage(info,['']), !,
     printNodes(Rest).
     
 
@@ -144,3 +152,47 @@ printEdges([E|Rest]):-
 edgeLength(ed(_,_,B,E), Val) :- Val is E - B.
 longestEdge(List, Out) :- listMax(edgeLength, List, Out).
 shortestEdge(List,Out) :- listMin(edgeLength, List, Out).
+
+%%%%%%%%%%%%%%%%%%%%%%
+
+statsAnalyseNode(NodeName):-
+    nodeExists(NodeName), !,
+    getNeighbours(NodeName, Neighbours),
+    length(Neighbours, Degree),
+    printNode(node(NodeName,Degree)),
+    messages(nodeNeighbours, [NeighboursMsg]),
+    outputMessage(info, [NeighboursMsg]),
+    printNeighbours(Neighbours).
+
+statsAnalyseNode(NodeName):-
+    messages(noNode, Msg),
+    outputMessage(error, Msg).    
+    
+    
+nodeExists(Name):- edge(Name,_,_,_).
+nodeExists(Name):- edge(_,Name,_,_).
+
+connects(Name, ed(Name,_,_,_)).
+connects(Name, ed(_,Name,_,_)).
+
+otherNode(Name, ed(Name,Y,B,E), neighbour(Y,B,E)).
+otherNode(Name, ed(X,Name,B,E), neighbour(X,B,E)).
+
+getNeighbours(Name, Out):-
+    findall(ed(X,Y,B,E), edge(X,Y,B,E), Edges),
+    filter(connects(Name), Edges, NextEdges),
+    map(otherNode(Name), NextEdges, Out).
+    
+printNeighbours([]).
+printNeighbours([neighbour(Name,B,E)|Rest]):-
+    messages(neighbourMsg, [MFrom, MTo, MLine, MMin]),
+    Min is E - B,
+    timeToAtom(B, BeginA),
+    timeToAtom(E, EndA),
+    numberToAtom(Min, MinA),
+    concatenateAtoms([Name, MFrom, BeginA, MTo, EndA, MLine, MinA, MMin], Msg),
+    outputMessage(info, [Msg]), !,
+    printNeighbours(Rest).
+    
+    
+    
