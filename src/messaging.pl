@@ -145,3 +145,9 @@ messages( dupliciteGraphName,
 messages( invalidGraphTerm,
           ['Invalid term in graph file: ']
         ).
+messages( fileNotOpen,
+          ['Could not open file ']
+        ).
+messages( nonAtomicGraphName,
+          ['The graph name is not atomic.']
+        ).

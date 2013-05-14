@@ -5,13 +5,15 @@
 %
 % date: 2013-05-12
 % responsible for exported functions:
-%       Vladimir Still ( getChangeList/1 )
+%       Vladimir Still ( getChangeList/1, printChangeList/0 )
 %
-:- module( changeList, [ getChangeList/1 ] ).
+:- module( changeList, [ getChangeList/1, printChangeList/0 ] ).
 
 :- use_module( library( lists ) ).
 :- use_module( graph, [ edge/4 ] ).
 
+% TBD
+printChangeList.
 
 /* getChangeList( -ChangeList )
  generates list of changes of graph in database

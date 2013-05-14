@@ -10,7 +10,7 @@
 %
 :- module( graphManipulation, [graphInMoment/1, edge/2] ).
 
-:- use_module( graph, [edge/2] )
+:- use_module( graph, [edge/4] ).
 
 /* edge( +-Source, +-Destionation )
 dynamic predicate representing edge in graph in given moment
@@ -24,8 +24,8 @@ always succeeds exactly once
 @param +TimeMoment      desired time moment (dynamicGraph format)
 */
 graphInMoment( TimeMoment ) :-
-    deleteGraphMoment,
-    (   edge( Source, Destionation, BeginTime, EndTime),
+    deteleGraphMoment,
+    (   edge( Source, Destination, BeginTime, EndTime),
         BeginTime =< TimeMoment,
         EndTime >= TimeMoment,
         assertz( edge( Source, Destination ) ),

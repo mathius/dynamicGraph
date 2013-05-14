@@ -9,7 +9,7 @@
 :- module( graph, [graphName/1, edge/4, loadGraph/1, printGraph/0] ).
 
 :- use_module( time, [timeConversion/2, timeToAtom/2] ).
-:- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
+:- use_module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1] ).
 :- use_module( messaging, [messages/2, outputMessage/2] ).
 
 
@@ -53,15 +53,22 @@ loadGraph( File ) :-
         retractGraph,
         seeing( OldInputStream ),
         seen,
-        see( File ), % TBD error message when file does not exist
+        (openFileForReading( File ) -> readTerms( Status ) ; Status = error),
+        printResultMessage( Status ),
+        seen,
+        see( OldInputStream ).
+
+/* readTerms( -Status )
+reads term from input stream in a cycle
+always succeeds exactly once
+@param -Status error/success/continue (see processTerm for details)
+*/
+readTerms( Status ) :-
         repeat,
                 read( Term ),
                 processTerm( Term, Status ),
                 ( Status == error ; Status == success ),
-        !,
-        printResultMessage( Status ),
-        seen,
-        see( OldInputStream ).
+        !.
 
 /* processTerm( +Term, -ProcessingStatus )
 processed term falls into one of 4 categories
@@ -85,8 +92,14 @@ processTerm( name( GraphName ), Status ) :-
         Status = error,
         !
         ;
+        atomic( GraphName ),
         assertz( graphNamePrivate( GraphName ) ),
         Status = continue,
+        !
+        ;
+        messages( nonAtomicGraphName, [Message] ),
+        outputMessage( error, [Message] ),
+        Status = error,
         !.
 processTerm( e( Source, Destination, Time, Duration ), Status ) :-
         timeConversion( BeginTime, Time ),

@@ -4,10 +4,10 @@
 % 
 % date: 2013-05-09
 % responsible for exported functions:
-%       Andrej Krejèír(statsNodes/0)
+%       Andrej Krejcir(statsNodes/0)
 %
-
 :- module( stats, [statsNodes/0, statsEdges/0] ).
+
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
@@ -89,5 +89,5 @@ minDegreeNode([node(N1,Deg1)| Nodes], node(N2,Deg2), Out):-
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-statsEdge:- fail.
+statsEdges:- true.
     
