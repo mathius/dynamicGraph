@@ -3,7 +3,7 @@
 % Exports single predicate getChangeList which generates list of changes
 % (of graph in database)
 %
-% date: 2013-05-12
+% date: 2013-05-14
 % responsible for exported functions:
 %       Vladimir Still ( getChangeList/1, printChangeList/0 )
 %

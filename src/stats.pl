@@ -2,7 +2,7 @@
 %
 % This module contains ....
 % 
-% date: 2013-05-09
+% date: 2013-05-14
 % responsible for exported functions:
 %       Andrej Krejcir(statsNodes/0)
 %

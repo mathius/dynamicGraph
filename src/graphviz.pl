@@ -2,7 +2,7 @@
 %
 % Description to be added.
 %
-% date: 2013-05-08
+% date: 2013-05-14
 % authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1 )
 %
 :- module( graphviz, [ enableGraphviz/1, disableGraphviz/0, plotGraph/1 ] ).

@@ -4,7 +4,7 @@
 % - load graph for the moment to database
 % - depth first search in this graph
 %
-% date: 2013-05-12
+% date: 2013-05-14
 % responsible for exported functions:
 %       Martin Ukrop (graphInMoment/1, edge/2)
 %

@@ -2,7 +2,7 @@
 %
 % This module contains predicates emulating the command line interface of DynamicGraph
 % 
-% date: 2013-05-08
+% date: 2013-05-14
 % responsible for exported functions:
 %       Martin Ukrop (cliMain/0)
 %
