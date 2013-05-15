@@ -59,4 +59,4 @@ openFileForReading( File ) :-
                     ).
 
 makePath( Directory, File, Path ) :-
-    concatenateAtoms( Directory, '/', File, Path ).
+    concatenateAtoms( [ Directory, '/', File ], Path ).
