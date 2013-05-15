@@ -161,6 +161,9 @@ messages( compSize, % used for printing component statistics
 messages( compNodes, % used for printing component statistics
           ['Nodes: ']
         ). 
+messages( compTime, % used for printing component statistics
+          ['Time: ']
+        ).
                 
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']

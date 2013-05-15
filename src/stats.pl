@@ -6,14 +6,16 @@
 % responsible for exported functions:
 %       Andrej Krejcir(statsNodes/0, statsEdges/0, statsAnalyseNode/1)
 %
-:- module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1, statsComponents/0] ).
+:- module( stats, [statsNodes/0, statsEdges/0,
+             statsAnalyseNode/1, statsComponents/0, statsMaxComponent/0] ).
 
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( graph, [edge/4] ).
-:- use_module( graphComponent, [component/2, computeComponents/0, computeComponents/1, getComponentList/1]).
-:- use_module( graphManipulation, [graphInMoment/1, edge/2, initializeGraph/1, advanceMinute/1] ).
+:- use_module( graphComponent, [component/2, computeComponents/0, getComponentList/1]).
+:- use_module( graphManipulation, [graphInMoment/1, edge/2, initializeGraph/1, 
+                advanceMinute/1, startOfTime/1, endOfTime/1] ).
 :- use_module(library(lists)).
                                                
 
@@ -211,6 +213,70 @@ statsComponents:-
     computeComponents,
     getComponentList(CompList),
     all(printComponent, CompList).
+    
+
+statsMaxComponent:-
+    timeInterval(Begin,End),
+    initializeGraph(_),
+    findMaxComponent(Begin-End ,Time,Comp),
+    clamp(Time, Begin, End, CTime),
+    timeToAtom(CTime, TimeA),
+    messages(compTime, [TimeMsg]),
+    concatenateAtoms([TimeMsg, TimeA], Msg),
+    outputMessage(info, [Msg]),
+    (
+        inInterval(Begin,End, Time), !, 
+        printComponent(Comp)    
+        ;
+        nodeExists(Node), !,
+        printComponent(comp(Node,[Node]))
+    ).
+    
+    
+
+findMaxComponent(Interval, OutTime, OutComp):-
+    startOfTime(StartTime),         
+    getMaxCompInMoment(Comp), !,
+    checkNextMoment(Interval, StartTime, Comp, OutTime, OutComp).
+    
+checkNextMoment(Interval, PrevTime, PrevComp, OutTime, OutComp):-
+    advanceMinute(NewTime),
+    getMaxCompInMoment(NewComp),
+    processComponents(Interval, PrevTime, PrevComp, NewTime, NewComp, Time, Comp), !,
+    checkNextMoment(Interval, Time, Comp, OutTime, OutComp).
+    
+checkNextMoment(Interval, OutTime, OutComp, OutTime, OutComp).
+
+getMaxCompInMoment(Comp):-
+    computeComponents,
+    getComponentList(CompList),
+    listMax(compSize, CompList, Comp).
+
+processComponents(Begin-End, Time1, Comp1, Time2, Comp2, OutTime, OutComp):-
+    inInterval(Begin,End,Time2),!,
+    compSize(Comp1, Size1),
+    compSize(Comp2, Size2),
+    (
+        Size2 > Size1,!, 
+        OutTime = Time2, OutComp = Comp2
+        ;
+        OutTime = Time1, OutComp = Comp1
+    ).
+    
+processComponents(Begin-End, Time1, Comp1, Time2, Comp2, Time2, Comp2):-
+    Time2 < Begin, !.
+    
+processComponents(Begin-End, Time1, Comp1, Time2, Comp2, Time1, Comp1):-
+    Time2 > End.
+
+ 
+inInterval(B,E,X):- X >= B, X =< E.   
+clamp(X,B,E,B):- X < B.
+clamp(X,B,E,E):- X > E.
+clamp(X,_,_,X). 
+ 
+    
+compSize(comp(Label, NodeList), Out):- length(NodeList, Out).
     
 printComponent( comp(Label, NodeList) ):-
     messages(compLabel, [CompLabelMsg]),

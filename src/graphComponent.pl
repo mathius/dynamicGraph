@@ -4,11 +4,10 @@
 % 
 % date: 2013-05-15
 % responsible for exported functions:
-%       Andrej Krejcir()
+%       Andrej Krejcir( component/2, computeComponents/0, getComponentList/1)
 %
 
-:- module( graphComponent, [component/2, computeComponents/0, 
-            computeComponents/1, getComponentList/1] ).
+:- module( graphComponent, [component/2, computeComponents/0,  getComponentList/1] ).
 
 
 :- use_module( graph, [edge/4] ).
