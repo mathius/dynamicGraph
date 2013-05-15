@@ -7,9 +7,11 @@
 % date: 2013-05-15
 % responsible for exported functions:
 %       Martin Ukrop (graphInMoment/1, edge/2)
-%       Vladimír Štill ( initialize/1, advanceMinute/1, edge/2 )
+%       Vladimír Štill ( initializeGraph/1, advanceMinute/1, edge/2
+%                      , startOfTime/1, endOfTime/1 )
 %
-:- module( graphManipulation, [graphInMoment/1, edge/2, initialize/1, advanceMinute/1 ] ).
+:- module( graphManipulation, [ graphInMoment/1, edge/2, initializeGraph/1
+                              , advanceMinute/1, startOfTime/1, endOfTime/1 ] ).
 
 :- use_module( changeList, [ getChangeList/1 ] ).
 :- use_module( graph, [edge/4] ).
@@ -52,27 +54,44 @@ deleteGraphMoment :-
 
 
 /* advanceMinute( -NextMinute )
-* 
-* @NextMinute 
+* Change graph to next minute which has different graph
+* @NextMinute      Time of graph state after call
 */
 advanceMinute( NextMinute ) :-
       retract( changesTail( Changes ) )
     , !
     , advanceMinute( Changes, NextMinute ).
 
-/* initialize( -InitialTime )
+/* initializeGraph( -InitialTime )
+* Loads initial configuration of graph
+* this predicate should be called one for graph, after it is loaded
 */
-initialize( InitialTime ) :- 
+initializeGraph( InitialTime ) :- 
       retractGraph
     , getChangeList( ChangeList )
     , assertz( ChangeList )
     , !
     , makeInitialGraph( InitialTime, ChangeList ).
 
+/* startOfTime( -StartTime )
+* gives time of first occurence of first edge
+* @StartTime
+*/
+startOfTime( StartTime ) :- startOfTimePrivate( StartTime ).
+
+/* endOfTime( -EndTime )
+* gives time of last occurence of last edge
+* @endOfTime
+*/
+endOfTime( EndTime ) :- endOfTimePrivate( EndTime ).
+
+:- dynamic startOfTimePrivate/1.
+:- dynamic endOfTimePrivate/1.
+
 retractGraph :-
       retractall( changeList( _, _, _ ) )
-    , retractall( startOfTime( _ ) )
-    , retractall( endOfTime( _ ) )
+    , retractall( startOfTimePrivate( _ ) )
+    , retractall( endOfTimePrivate( _ ) )
     , retractall( currentTime( _ ) )
     , retractall( changesTail( _ ) )
     , retractall( edgePrivate( _, _ ) )
@@ -80,8 +99,8 @@ retractGraph :-
 
 % makeInitialGraph( -InitialTime, +ChangeList )
 makeInitialGraph( InitialTime, changeList( StartOfTime, EndOfTime, Changes ) ) :-
-      assertz( startOfTime( StartOfTime ) )
-    , assertz( endOfTime( EndOfTime ) )
+      assertz( startOfTimePrivate( StartOfTime ) )
+    , assertz( endOfTimePrivate( EndOfTime ) )
     , !
     , Changes = [ minute( InitialTime, NowChanges ) | NextChanges ]
     , assertz( currentTime( InitialTime ) )

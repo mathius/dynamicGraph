@@ -2,11 +2,12 @@
 %
 % This module contains general functions useful throughout the project.
 %
-% date: 2013-05-08
+% date: 2013-05-15
 % responsible for exported functions:
 %       Martin Ukrop (concatenateAtoms/2, numberToAtom/2)
+%       Vladimír Štill ( makePath/3 )
 %
-:- module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1] ).
+:- module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1, makePath/3] ).
 
 :- use_module( messaging, [messages/2, outputMessage/2] ).
 
@@ -56,3 +57,6 @@ openFileForReading( File ) :-
                                 fail 
                       )
                     ).
+
+makePath( Directory, File, Path ) :-
+    concatenateAtoms( [ Directory, '/', File ], Path ).
