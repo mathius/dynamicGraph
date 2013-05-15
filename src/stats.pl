@@ -1,6 +1,6 @@
 % DynamicGraph, stats module
 %
-% This module contains ....
+% This module contains predicates for printing statistics
 % 
 % date: 2013-05-14
 % responsible for exported functions:
