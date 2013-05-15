@@ -28,7 +28,7 @@ timeToInt(Year-Month-Day+Hour:Min,OutTime):-
 conversion form time number to time functor
 */
 intToTime(Time, Year-Month-Day+Hour:Min):-
-    datime(StartTime, datime(2013,3,13,19,0,0)),
+    datime(StartTime, datime(2013,3,13,0,0,0)),
     UnixTime is StartTime + Time * 60,
     datime(UnixTime, datime(Year,Month,Day,Hour,Min,_)).
 
