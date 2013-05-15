@@ -12,8 +12,8 @@
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( graph, [edge/4] ).
-:- use_module( graphComponent, [component/2, computeComponents/0, computeComponents/1]).
-:- use_module( graphManipulation, [graphInMoment/1, edge/2, initialize/1, advanceMinute/1] ).
+:- use_module( graphComponent, [component/2, computeComponents/0, computeComponents/1, getComponentList/1]).
+:- use_module( graphManipulation, [graphInMoment/1, edge/2, initializeGraph/1, advanceMinute/1] ).
 :- use_module(library(lists)).
                                                
 
@@ -24,6 +24,11 @@ filter(Pred, [X|Rest], [X|Out]):-
     call(Pred,X),!,
     filter(Pred,Rest,Out).
 filter(Pred, [_|Rest], Out) :- filter(Pred, Rest, Out).
+
+all(Pred, []).
+all(Pred, [H|Rest]):-
+    call(Pred,H),!,
+    all(Pred, Rest).
 
 map(Pred, [], []).
 map(Pred, [X|Rest], [Y|Out]):-
@@ -201,13 +206,29 @@ printNeighbours([neighbour(Name,B,E)|Rest]):-
 
 statsComponents:-
     timeInterval(Begin,End),
-    initialize(_),
+    initializeGraph(_),
     graphInMoment(Begin),
-    computeComponents(stats:neighbourInMoment),
-    getComponentList(CompList).
+    computeComponents,
+    getComponentList(CompList),
+    all(printComponent, CompList).
     
-      
+printComponent( comp(Label, NodeList) ):-
+    messages(compLabel, [CompLabelMsg]),
+    messages(compSize, [CompSizeMsg]),
+    messages(compNodes, [CompNodesMsg]),
+    length(NodeList, Len),
+    numberToAtom(Len,LenA),
+    concatenateAtoms([CompLabelMsg, Label], Msg1),
+    concatenateAtoms([CompSizeMsg, LenA], Msg2),
+    map(addSeparator(' '), NodeList, MsgList),
+    concatenateAtoms(MsgList, MsgNodes),
+    concatenateAtoms([CompNodesMsg, MsgNodes], Msg3),
+    outputMessage(info, [Msg1]),
+    outputMessage(info, [Msg2]),
+    outputMessage(info, [Msg3, '']).
     
-neighbourInMoment(Name,Out) :- edge(Name,Out).
-neighbourInMoment(Name,Out) :- edge(Out, Name).
+addSeparator(SepA, Atom, Out):- atom_concat(Atom,SepA,Out).
+    
+    
+    
         

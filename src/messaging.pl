@@ -151,6 +151,16 @@ messages( nodeNeighbours, % used for printing node statistics
 messages( neighbourMsg, % used for printing node statistics
           [' --> From ', ' to ', ' -- ', ' min']
         ).
+
+messages( compLabel, % used for printing component statistics
+          ['Label: ']
+        ).                
+messages( compSize, % used for printing component statistics
+          ['Size: ']
+        ). 
+messages( compNodes, % used for printing component statistics
+          ['Nodes: ']
+        ). 
                 
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']
