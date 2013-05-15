@@ -192,3 +192,5 @@ messages( duplicatedEdge,
 messages( deletingNonexistenEdge,
           [ 'Attemt to delete nonexisten edge: ' ]
         ).
+messages( finished, [ 'Finished.' ] ).
+messages( writtingFile, [ 'Writing to file: ' ] ).

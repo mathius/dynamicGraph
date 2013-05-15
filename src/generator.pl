@@ -13,6 +13,7 @@
 :- use_module( queue ).
 :- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
 :- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
+:- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
 graphGenerate :- graphGenerate( user ).
 
@@ -202,7 +203,9 @@ fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :- % Min > Cnt & not adding
 writeFile( [] ) :- write( 'empty' ).
 writeFile( ES ) :-
       name( File )
-    , write( 'writing to ' ), write( File ), write( '...' )
+    , messages( writtingFile, [ MSG ] )
+    , concatenateAtoms( [ MSG, File, '...' ], FinMsg )
+    , outputMessage( info, [ FinMsg ] )
     , telling( OldFile )
     , told
     , tell( File )
@@ -211,7 +214,8 @@ writeFile( ES ) :-
     , nl
     , writeFile1( ES )
     , told
-    , write( 'finished.' )
+    , messages( finished, [ Fin ] )
+    , outputMessage( info, [ Fin ] )
     , tell( OldFile ).
 
 writeFile1( [] ).
