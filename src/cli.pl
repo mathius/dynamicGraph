@@ -10,7 +10,7 @@
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
-:- use_module( stats, [statsNodes/0] ).
+:- use_module( stats, [statsNodes/0, statsEdges/0, statsComponents/0] ).
 :- use_module( graph, [loadGraph/1, printGraph/0] ).
 :- use_module( graphviz, [enableGraphviz/1, disableGraphviz/0] ).
 :- use_module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
