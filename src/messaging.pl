@@ -194,3 +194,5 @@ messages( deletingNonexistenEdge,
         ).
 messages( finished, [ 'Finished.' ] ).
 messages( writtingFile, [ 'Writing to file: ' ] ).
+messages( missingPredicate, [ 'Missing predicate: ' ] ).
+messages( nothingGenerated, [ 'Nothing generated.' ] ).

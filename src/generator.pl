@@ -24,11 +24,17 @@ graphGenerate( File ) :-
     , seen
     , see( OldFile )
     , ! % we dont want to backtrack to user input if validity fails!
-    , checkValidity
-    , optional( File )
-    , runGenerator( Edges )
-    , writeFile( Edges )
-    , unload( Preds ).
+    ,
+    (   checkValidity
+      , optional( File )
+      , runGenerator( Edges )
+      , writeFile( Edges )
+      , unload( Preds )
+    ;   unload( Preds )
+      , messages( nothingGenerated, [ MSG ] )
+      , outputMessage( error, [ MSG ] )
+      , fail
+    ).
 
 loadGeneratorPreds( Preds ) :- read( X ), load( X, [], Preds ).
 
@@ -42,8 +48,22 @@ load( X0, P0, Preds ) :-
 unload( [] ).
 unload( [ P | PS ] ) :- retract( P ), unload( PS ).
 
-checkValidity :- clause( vertices(_), _ ), clause( edges(_,_), _ ), clause( newEdge(_,_), _ )
-    , clause( removeEdge(_,_,_), _ ), clause( duration(_,_), _ ).
+checkValidity :-
+      checkPredicate( vertices(_), 'vertices/1' )
+    , checkPredicate( edges(_,_), 'edges/2' )
+    , checkPredicate( newEdge(_,_), 'newEdge/2' )
+    , checkPredicate( removeEdge(_,_,_), 'removeEdge/3' )
+    , checkPredicate( duration(_,_), 'duration/2' ).
+
+checkPredicate( Clause, Emsg ) :-
+    ( clause( Clause, _ ), !
+    ; emsgMissing( Emsg ), fail ).
+
+emsgMissing( Emsg ) :-
+      messages( missingPredicate, [ Missing ] )
+    , concatenateAtoms( [ Missing, Emsg, '.' ], MSG )
+    , outputMessage( error, [ MSG ] ).
+
 
 optional( File ) :- 
     (   clause( name(_), _ )
