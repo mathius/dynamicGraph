@@ -85,8 +85,8 @@ startOfTime( StartTime ) :- startOfTimePrivate( StartTime ).
 */
 endOfTime( EndTime ) :- endOfTimePrivate( EndTime ).
 
-dynamic startOfTimePrivate/1
-dynamic endOfTimePrivate/1
+:- dynamic startOfTimePrivate/1.
+:- dynamic endOfTimePrivate/1.
 
 retractGraph :-
       retractall( changeList( _, _, _ ) )
