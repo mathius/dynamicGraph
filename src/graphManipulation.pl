@@ -18,6 +18,9 @@
 :- use_module( time, [ timeToAtom/2 ] ).
 :- use_module( utilities, [ concatenateAtoms/2 ] ).
 
+% needed for graphInMoment/1
+:- use_module( graph, [ edge/4 ]).
+
 /* edge( +-From, +-To ) 
 * public interface to dynamically loaded state of graph
 */
