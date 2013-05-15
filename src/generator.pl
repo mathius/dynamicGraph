@@ -15,7 +15,102 @@
 :- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
-graphGenerate :- graphGenerate( user ).
+graphGenerate :-
+      getName
+    , getNodes
+    , getEdges
+    , getNewEdge
+    , getRemoveEdge
+    , getDuration
+    , runGenerator( Edges )
+    , writeFile( Edges )
+    , unloadUser
+    ; unloadUser, fail.
+
+getName :-
+      ask( askName )
+    , read( N )
+    , 
+    (   atom( N )
+      , assertz( name( N ) )
+      , !
+    ;   invalidInput( nameMustBeAtom ), fail
+    ).
+
+getNodes :-
+      ask( askNodes )
+    ,
+    (   read( N )
+      , number( N )
+      , assertz( vertices( N ) )
+      , !
+    ;   invalidInput( expectedNumber ), fail
+    ).
+
+getEdges :- 
+      ask( askEdges )
+    ,
+    (   read( Min )
+      , read( Max )
+      , number( Min )
+      , number( Max )
+      , Min < Max
+      , assertz( edges( Min, Max ) )
+      , !
+    ;   invalidInput( expected2Numbers ), fail
+    ).
+
+isProb( X ) :- number( X ), 0 < X, X =< 1.
+
+getNewEdge :-
+      ask( askNewEdge )
+    ,
+    (   read( N )
+      , isProb( N )
+      , assertz( newEdge( _, N ) )
+      , !
+    ; invalidInput( expectedProbability ), fail
+    ).
+
+getRemoveEdge :-
+      ask( askRemoveEdge )
+    ,
+    (   read( R )
+      , isProb( R )
+      , assertz( removeEdge( _, _, R ) )
+      , !
+    ; invalidInput( expectedProbability ), fail
+    ).
+
+getDuration :-
+      ask( askDuration )
+    ,
+    (   read( From )
+      , read( To )
+      , isDuration( From, To )
+      , assertz( duration( From, To ) )
+      , !
+    ; invalidInput( expectedDuration ), fail
+    ).
+
+unloadUser :-
+      retractall( vertices( _ ) )
+    , retractall( name( _ ) )
+    , retractall( edges( _, _ ) )
+    , retractall( newEdge( _, _ ) )
+    , retractall( removeEdge( _, _, _ ) )
+    , retractall( duration( _, _ ) ).
+
+% TODO
+isDuration( F, T ) :- timeConversion( FF, F ), timeConversion( TT, T ), FF < TT.
+    
+
+invalidInput( E ) :-
+      messages( invalidInput, [ II ] )
+    , messages( E, Msg )
+    , outputMessage( error, [ II | Msg ] ).
+
+ask( Q ) :- messages( Q, M ), outputMessage( question, M ).
 
 graphGenerate( File ) :-
       seeing( OldFile )
@@ -48,6 +143,7 @@ load( X0, P0, Preds ) :-
 unload( [] ).
 unload( [ P | PS ] ) :- retract( P ), unload( PS ).
 
+% mandatory predicates
 checkValidity :-
       checkPredicate( vertices(_), 'vertices/1' )
     , checkPredicate( edges(_,_), 'edges/2' )
@@ -64,7 +160,7 @@ emsgMissing( Emsg ) :-
     , concatenateAtoms( [ Missing, Emsg, '.' ], MSG )
     , outputMessage( error, [ MSG ] ).
 
-
+% check optional or assertz defaults
 optional( File ) :- 
     (   clause( name(_), _ )
       , ! 
@@ -109,8 +205,7 @@ getFromTime( gen( _, _, F, _, _, _ ), F ).
 genForEachMinute( G, G ) :-
       G = gen( _, _, FromTime, ToTime, _, _ )
     , FromTime > ToTime
-    , !
-    .
+    , !.
 genForEachMinute( Gen, GenOut ) :-
       genMinute( Gen, Gen0 )
     , !
