@@ -2,7 +2,7 @@
 %
 % Description to be added.
 %
-% date: 2013-05-08
+% date: 2013-05-14
 % responsible for exported functions:
 %       Vladimir Still (graphGenerate/1, graphGenerate/0)
 %

@@ -6,7 +6,9 @@
 % responsible for exported functions:
 %       Martin Ukrop (concatenateAtoms/2, numberToAtom/2)
 %
-:- module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
+:- module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1] ).
+
+:- use_module( messaging, [messages/2, outputMessage/2] ).
 
 /* numberToAtom( +Number, -Atom )
 convert number to atom
@@ -37,3 +39,20 @@ concatenateAtoms0( [], Output, Output ).
 concatenateAtoms0( [Atom|Rest], AccumulatorPrefix, Output ) :-
         atom_concat( AccumulatorPrefix, Atom, AccumulatorPrefix2 ),
         concatenateAtoms0( Rest, AccumulatorPrefix2, Output ).
+
+/* openFileForReading( +File )
+opens specified file for reading
+non-existent files are handled gracefully, originaly opened input stream is kept
+@param +File    file to load
+*/
+openFileForReading( File ) :-
+        seeing( OldInputStream ),
+        on_exception( error(existence_error(_,_),existence_error(_,_,_,_,_)),
+                      see( File ), 
+                      (         messages( fileNotOpen, [Message] ),
+                                concatenateAtoms( [Message,'\'',File,'\''], MessageFinal ),
+                                outputMessage( error, [MessageFinal] ),
+                                see( OldInputStream ),
+                                fail 
+                      )
+                    ).

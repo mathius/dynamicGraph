@@ -2,12 +2,22 @@
 %
 % Description to be added.
 %
-% date: 2013-05-08
-% authors: Vladimir Still ( plotGraph/2, plotGraph/4 )
+% date: 2013-05-14
+% authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1 )
 %
-:- module( graphviz, [ plotGraph/2, plotGraph/4 ] ).
+:- module( graphviz, [ enableGraphviz/1, disableGraphviz/0, plotGraph/1 ] ).
 
 :- use_module( library( lists ) ).
+:- use_module( graphManipulation, [edge/2] ).
+
+% TBD
+enableGraphviz( _File ).
+
+% TBD
+disableGraphviz. 
+
+% TBD
+plotGraph( _File ).
 
 /* plotGraph( +OutputFile, +Edges )
 saves plot of graph given by edges to output file

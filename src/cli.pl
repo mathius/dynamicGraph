@@ -2,7 +2,7 @@
 %
 % This module contains predicates emulating the command line interface of DynamicGraph
 % 
-% date: 2013-05-08
+% date: 2013-05-14
 % responsible for exported functions:
 %       Martin Ukrop (cliMain/0)
 %
@@ -12,6 +12,10 @@
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( stats, [statsNodes/0] ).
 :- use_module( graph, [loadGraph/1, printGraph/0] ).
+:- use_module( graphviz, [enableGraphviz/1, disableGraphviz/0] ).
+:- use_module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
+:- use_module( changeList, [ printChangeList/0 ] ).
+:- use_module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -21,7 +25,8 @@ list of valid user commands and their mapping to internal predicates
                             arity must be the same, arguments from the user are used
 */
 validCommand( graphLoad, 1, loadGraph ).
-validCommand( graphGenerate, Arity, notImplemented ) :- member( Arity, [0,1] ).
+validCommand( graphGenerate, 0, graphGenerate ).
+validCommand( graphGenerate, 1, graphGenerate ).
 validCommand( graph, 0, printGraph ).
 validCommand( timeBegin, 0, printTimeInterval ).
 validCommand( timeBegin, 1, setBeginTime ).
@@ -30,13 +35,13 @@ validCommand( timeEnd, 1, setEndTime ).
 validCommand( timeInterval, 0, printTimeInterval ).
 validCommand( timeInterval, 2, setTimeInterval ).
 validCommand( time, 0, printTimeInterval ).
-validCommand( graphviz, 1, notImplemented ).
-validCommand( graphvizOff, 0, notImplemented ).
+validCommand( graphviz, 1, enableGraphviz ).
+validCommand( graphvizOff, 0, disableGraphviz ).
 validCommand( statsNodes, 0, statsNodes ).
-validCommand( statsEdges, 0, notImplemented ).
+validCommand( statsEdges, 0, statsEdges ).
 validCommand( statsComponents, 0, notImplemented ).
-validCommand( statsProgress, 0, notImplemented ).
-validCommand( statsAnalyseNode, 1, notImplemented ).
+validCommand( statsProgress, 0, printChangeList ).
+validCommand( statsAnalyseNode, 1, statsAnalyseNode ).
 validCommand( statsMaxComponent, 0, notImplemented ).
 validCommand( help, 0, printHelp ).
 validCommand( quit, 0, quit ).

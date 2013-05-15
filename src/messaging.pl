@@ -126,7 +126,32 @@ messages( nodeMax, % used for printing node statistics
         ).
 messages( nodeMin, % used for printing node statistics
           ['Node with minimum degree is: ']
+        ).                                             
+messages( edgeNum, % used for printing edge statistics
+          ['Number of edges in graph: ']
         ).
+messages( edgeInfo1, % used for printing edge statistics
+          ['Edge from: ', ' to ']
+        ).
+messages( edgeInfo2, % used for printing edge statistics
+          ['Start time: ', 'End time:   ', ' -- ', 'Interval: ' , ' min']
+        ).
+messages( edgeMax, % used for printing edge statistics
+          ['Edge with longest time interval:']
+        ).
+messages( edgeMin, % used for printing edge statistics
+          ['Edge with shortest time interval:']
+        ).
+messages( noNode, % used for printing node statistics
+          ['Node doesn\'t exist.']
+        ).    
+messages( nodeNeighbours, % used for printing node statistics
+          ['Connected edges:']
+        ).        
+messages( neighbourMsg, % used for printing node statistics
+          [' --> From ', ' to ', ' -- ', ' min']
+        ).
+                
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']
         ).
@@ -144,4 +169,10 @@ messages( dupliciteGraphName,
         ).
 messages( invalidGraphTerm,
           ['Invalid term in graph file: ']
+        ).
+messages( fileNotOpen,
+          ['Could not open file ']
+        ).
+messages( nonAtomicGraphName,
+          ['The graph name is not atomic.']
         ).
