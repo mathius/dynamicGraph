@@ -14,8 +14,9 @@
                               , advanceMinute/1, startOfTime/1, endOfTime/1 ] ).
 
 :- use_module( changeList, [ getChangeList/1 ] ).
-:- use_module( graph, [edge/4] ).
-
+:- use_module( messaging, [ messages/2, outputMessage/2 ] ).
+:- use_module( time, [ timeToAtom/2 ] ).
+:- use_module( utilities, [ concatenateAtoms/2 ] ).
 
 /* edge( +-From, +-To ) 
 * public interface to dynamically loaded state of graph
@@ -62,16 +63,22 @@ advanceMinute( NextMinute ) :-
     , !
     , advanceMinute( Changes, NextMinute ).
 
-/* initializeGraph( -InitialTime )
+/* initializeGraph( -Success )
 * Loads initial configuration of graph
 * this predicate should be called one for graph, after it is loaded
+*
+* @Success      is set to either success or error if there are errors in loaded graph
 */
-initializeGraph( InitialTime ) :- 
+initializeGraph( Success ) :- 
       retractGraph
-    , getChangeList( ChangeList )
-    , assertz( ChangeList )
-    , !
-    , makeInitialGraph( InitialTime, ChangeList ).
+    ,
+    ( getChangeList( ChangeList ) ->
+        assertz( ChangeList )
+      , !
+      , validateGraph( ChangeList, Success )
+      , makeInitialGraph( ChangeList )
+    ; Success = error
+    ).
 
 /* startOfTime( -StartTime )
 * gives time of first occurence of first edge
@@ -97,8 +104,8 @@ retractGraph :-
     , retractall( edgePrivate( _, _ ) )
     , !.
 
-% makeInitialGraph( -InitialTime, +ChangeList )
-makeInitialGraph( InitialTime, changeList( StartOfTime, EndOfTime, Changes ) ) :-
+% makeInitialGraph( +ChangeList )
+makeInitialGraph( changeList( StartOfTime, EndOfTime, Changes ) ) :-
       assertz( startOfTimePrivate( StartOfTime ) )
     , assertz( endOfTimePrivate( EndOfTime ) )
     , !
@@ -156,5 +163,38 @@ fastForwardChanges( Moment, [ minute( Moment, _ ) | NextChanges ], NextChanges )
 fastForwardChanges( Moment, [ _ | NextChanges ], ForwardChanges ) :-
     fastForwardChanges( Moment, NextChanges, ForwardChanges ).
 
+% we validate graph by playing it with checks
+% validate( +ChangeList, -Success )
+validateGraph( changeList( _, _, CH ), Success ) :-
+      validateGraph42( CH, Success )
+    , retractall( edgePrivate( _, _ ) ).
 
+% validateGraph42( +Changes, -Success )
+validateGraph42( [], success ).
+validateGraph42( [ minute( M, NowChanges ) | NextChanges ], Success ) :-
+    validateGraph42( NowChanges, NextChanges, M, Success ).
+
+% validateGraph42( +NowChanges, +NextChanges, +Minutem -Success )
+validateGraph42( [], NextChanges, _, Success ) :-
+    validateGraph42( NextChanges, Success ).
+validateGraph42( [ addEdge( X, Y ) | CS ], NextChanges, M, Success ) :-
+    ( edgePrivate( X, Y ) -> Success = error, duplicate( M, X, Y )
+    ; assertz( edgePrivate( X, Y ) ), validateGraph42( CS, NextChanges, M, Success )
+    ).
+validateGraph42( [ deleteEdge( X, Y ) | CS ], NextChanges, M, Success ) :-
+    ( edgePrivate( X, Y )
+    -> retract( edgePrivate( X, Y ) ), validateGraph42( CS, NextChanges, M, Success )
+    ;  Success = error, deletingNonexisten( M, X, Y )
+    ).
+
+duplicate( Minute, X, Y ) :-
+      messages( duplicatedEdge, [ MSG ] )
+    , timeToAtom( Minute, AMin )
+    , concatenateAtoms( [ MSG, AMin, ': ( ', X, ', ', Y, ' ).' ], FinalMsg )
+    , outputMessage( error, [ FinalMsg ] ).
+deletingNonexisten( Minute, X, Y ) :-
+      messages( deletingNonexistenEdge, [ MSG ] )
+    , timeToAtom( Minute, AMin )
+    , concatenateAtoms( [ MSG, AMin, ': ( ', X, ', ', Y, ' ).' ], FinalMsg )
+    , outputMessage( error, [ FinalMsg ] ).
 

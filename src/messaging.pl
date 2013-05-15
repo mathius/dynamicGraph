@@ -176,3 +176,9 @@ messages( fileNotOpen,
 messages( nonAtomicGraphName,
           ['The graph name is not atomic.']
         ).
+messages( duplicatedEdge,
+          [ 'Edge is duplicated in graph: ' ]
+        ).
+messages( deletingNonexistenEdge,
+          [ 'Attemt to delete nonexisten edge: ' ]
+        ).

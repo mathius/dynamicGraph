@@ -11,7 +11,7 @@
 :- use_module( time, [timeConversion/2, timeToAtom/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1] ).
 :- use_module( messaging, [messages/2, outputMessage/2] ).
-
+:- use_module( graphManipulation, [ initializeGraph/1 ] ).
 
 /* edgePrivate( +-Source, +-Destination, -EndTime, -EndTime)
 private predicate for edge info (to prevent functions from altering the loaded graph)
@@ -54,7 +54,8 @@ loadGraph( File ) :-
         retractGraph,
         seeing( OldInputStream ),
         seen,
-        (openFileForReading( File ) -> readTerms( Status ) ; Status = error),
+        (openFileForReading( File ) -> readTerms( Status0 ) ; Status0 = error),
+        ( Status0 \= error -> initializeGraph( Status ) ; Status = Status0 ),
         printResultMessage( Status ),
         seen,
         see( OldInputStream ).
