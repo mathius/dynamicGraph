@@ -11,10 +11,106 @@
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utilities ).
+:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
 :- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
+:- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
-graphGenerate :- graphGenerate( user ).
+graphGenerate :-
+      getName
+    , getNodes
+    , getEdges
+    , getNewEdge
+    , getRemoveEdge
+    , getDuration
+    , runGenerator( Edges )
+    , writeFile( Edges )
+    , unloadUser
+    ; unloadUser, fail.
+
+getName :-
+      ask( askName )
+    , read( N )
+    , 
+    (   atom( N )
+      , assertz( name( N ) )
+      , !
+    ;   invalidInput( nameMustBeAtom ), fail
+    ).
+
+getNodes :-
+      ask( askNodes )
+    ,
+    (   read( N )
+      , number( N )
+      , assertz( vertices( N ) )
+      , !
+    ;   invalidInput( expectedNumber ), fail
+    ).
+
+getEdges :- 
+      ask( askEdges )
+    ,
+    (   read( Min )
+      , read( Max )
+      , number( Min )
+      , number( Max )
+      , Min < Max
+      , assertz( edges( Min, Max ) )
+      , !
+    ;   invalidInput( expected2Numbers ), fail
+    ).
+
+isProb( X ) :- number( X ), 0 < X, X =< 1.
+
+getNewEdge :-
+      ask( askNewEdge )
+    ,
+    (   read( N )
+      , isProb( N )
+      , assertz( newEdge( _, N ) )
+      , !
+    ; invalidInput( expectedProbability ), fail
+    ).
+
+getRemoveEdge :-
+      ask( askRemoveEdge )
+    ,
+    (   read( R )
+      , isProb( R )
+      , assertz( removeEdge( _, _, R ) )
+      , !
+    ; invalidInput( expectedProbability ), fail
+    ).
+
+getDuration :-
+      ask( askDuration )
+    ,
+    (   read( From )
+      , read( To )
+      , isDuration( From, To )
+      , assertz( duration( From, To ) )
+      , !
+    ; invalidInput( expectedDuration ), fail
+    ).
+
+unloadUser :-
+      retractall( vertices( _ ) )
+    , retractall( name( _ ) )
+    , retractall( edges( _, _ ) )
+    , retractall( newEdge( _, _ ) )
+    , retractall( removeEdge( _, _, _ ) )
+    , retractall( duration( _, _ ) ).
+
+% TODO
+isDuration( F, T ) :- timeConversion( FF, F ), timeConversion( TT, T ), FF < TT.
+    
+
+invalidInput( E ) :-
+      messages( invalidInput, [ II ] )
+    , messages( E, Msg )
+    , outputMessage( error, [ II | Msg ] ).
+
+ask( Q ) :- messages( Q, M ), outputMessage( question, M ).
 
 graphGenerate( File ) :-
       seeing( OldFile )
@@ -23,10 +119,17 @@ graphGenerate( File ) :-
     , seen
     , see( OldFile )
     , ! % we dont want to backtrack to user input if validity fails!
-    , checkValidity
-    , runGenerator( Edges )
-    , writeFile( Edges )
-    , unload( Preds ).
+    ,
+    (   checkValidity
+      , optional( File )
+      , runGenerator( Edges )
+      , writeFile( Edges )
+      , unload( Preds )
+    ;   unload( Preds )
+      , messages( nothingGenerated, [ MSG ] )
+      , outputMessage( error, [ MSG ] )
+      , fail
+    ).
 
 loadGeneratorPreds( Preds ) :- read( X ), load( X, [], Preds ).
 
@@ -40,10 +143,32 @@ load( X0, P0, Preds ) :-
 unload( [] ).
 unload( [ P | PS ] ) :- retract( P ), unload( PS ).
 
-checkValidity :- clause( vertices(_), _ ), clause( edges(_,_), _ ), clause( newEdge(_,_), _ )
-    , clause( removeEdge(_,_,_), _ ), clause( duration(_,_), _ ).
+% mandatory predicates
+checkValidity :-
+      checkPredicate( vertices(_), 'vertices/1' )
+    , checkPredicate( edges(_,_), 'edges/2' )
+    , checkPredicate( newEdge(_,_), 'newEdge/2' )
+    , checkPredicate( removeEdge(_,_,_), 'removeEdge/3' )
+    , checkPredicate( duration(_,_), 'duration/2' ).
 
-% TODO
+checkPredicate( Clause, Emsg ) :-
+    ( clause( Clause, _ ), !
+    ; emsgMissing( Emsg ), fail ).
+
+emsgMissing( Emsg ) :-
+      messages( missingPredicate, [ Missing ] )
+    , concatenateAtoms( [ Missing, Emsg, '.' ], MSG )
+    , outputMessage( error, [ MSG ] ).
+
+% check optional or assertz defaults
+optional( File ) :- 
+    (   clause( name(_), _ )
+      , ! 
+    ;   prefixToLast( File, '.', Prefix )
+      , concatenateAtoms( [ Prefix, '.graph.pl' ], Name )
+      , assertz( name( Name ) )
+    ).
+
 runGenerator( Closed ) :-
       getGenerator( Gen )
     , ! % disallow backtracting to getGenerator which is deterministic
@@ -80,18 +205,10 @@ getFromTime( gen( _, _, F, _, _, _ ), F ).
 genForEachMinute( G, G ) :-
       G = gen( _, _, FromTime, ToTime, _, _ )
     , FromTime > ToTime
-    , !
-    , write( '.' ).
+    , !.
 genForEachMinute( Gen, GenOut ) :-
       genMinute( Gen, Gen0 )
     , !
-    , write( ':' )
-    %%%%%%%%%%%%%%%%
-    , getFromTime( Gen0, Minute )
-    , timeConversion( Minute, M )
-    , write( M )
-    , nl
-    %%%%%%%%%%%%%%%%
     , addMinute( Gen0, Gen1 )
     , genForEachMinute( Gen1, GenOut ).
 
@@ -125,13 +242,10 @@ queueClosed( G0, [ e( X, Y, _, _ ) | ES ], Before, GOut ) :-
 removeEdges( _, [], [], C, C ) :- !. % finally append already closed edges and finish opened
 % edge is removed -> it is closed
 removeEdges( Minute, [ e( V1, V2, TStart ) | OS ], OSOut, [ e( V1, V2, TStart, Minute ) | CS ], C ) :-
-%    write( ', processing ' ), write( e( V1, V2, TStart ) ),
-%    ( ground( V1 ) ; write( OS ) ),
       TD is Minute - TStart
     , removeEdge( Minute, TD, Probability )
     , maybe( Probability ) % fails with probability 1 - Probability
     , !
-%    , write( ', closed: ' ), write( e( V1, V2, TStart, Minute ) )
     , removeEdges( Minute, OS, OSOut, CS, C ).
 
 removeEdges( Minute, [ E | OS ], [ E | OSOut ], CS, C ) :- % edge is not to be removed
@@ -166,7 +280,6 @@ genNonEmptyQueue( G, Qa, Probability, Min, Cnt, Max, GOut ) :-
     , dequeue( QA, e( V1, V2 ), QA1 )
     , getOpen( G, OS )
     , getFromTime( G, Minute )
-%    , write( ', adding ' ), write( e( V1, V2, Minute ) )
     , setOpen( G, [ e( V1, V2, Minute ) | OS ], G1 )
     , setQueue( G1, QA1, G2 )
     , Cnt1 is Cnt + 1
@@ -194,7 +307,6 @@ fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :- % Min > Cnt
     , dequeue( Qa, e( V1, V2 ), Qa1 )
     , getOpen( G, OS )
     , getFromTime( G, Minute )
-%    , write( ', filling ' ), write( e( V1, V2, Minute ) )
     , setOpen( G, [ e( V1, V2, Minute ) | OS ], G1 )
     , Cnt1 is Cnt + 1
     , fillMinimum( G1, Qa1, Probability, Min, Cnt1, GOut ).
@@ -206,13 +318,19 @@ fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :- % Min > Cnt & not adding
 writeFile( [] ) :- write( 'empty' ).
 writeFile( ES ) :-
       name( File )
-    , write( 'writing to ' ), write( File ), write( '...' )
+    , messages( writtingFile, [ MSG ] )
+    , concatenateAtoms( [ MSG, File, '...' ], FinMsg )
+    , outputMessage( info, [ FinMsg ] )
     , telling( OldFile )
     , told
     , tell( File )
+    , name( Name )
+    , write( 'name( \'' ), write( Name ), write( '\' ).' )
+    , nl
     , writeFile1( ES )
     , told
-    , write( 'finished.' )
+    , messages( finished, [ Fin ] )
+    , outputMessage( info, [ Fin ] )
     , tell( OldFile ).
 
 writeFile1( [] ).

@@ -195,3 +195,25 @@ messages( duplicatedEdge,
 messages( deletingNonexistenEdge,
           [ 'Attemt to delete nonexisten edge: ' ]
         ).
+messages( finished, [ 'Finished.' ] ).
+messages( writtingFile, [ 'Writing to file: ' ] ).
+messages( missingPredicate, [ 'Missing predicate: ' ] ).
+messages( nothingGenerated, [ 'Nothing generated.' ] ).
+
+messages( askName, [ 'Enter name of graph: ' ] ).
+messages( askNodes, [ 'Enter number of nodes: ' ] ).
+messages( askEdges, [ 'Enter number of edges (min, max separated by dot): ' ] ).
+messages( askNewEdge, [ 'Enter probability of emergence of new edge: ' ] ).
+messages( askRemoveEdge, [ 'Enter probability of removal of edge: ' ] ).
+messages( askDuration, [ 'Enter duration of graph: (dot separated, YYYY-MM-DD+HH:MM): ' ] ).
+
+messages( invalidInput, [ 'Invalid input' ] ).
+messages( nameMustBeAtom, [ 'Name must be atom.' ] ).
+messages( expectedNumber, [ 'Number was expected.' ] ).
+messages( expectedProbability,
+          [ 'Probability -- number in range [ 0, 1 ) -- was expected. ' ]
+        ).
+messages( expected2Numbers, [ 'Two numbers separated by dot were expected. ' ] ).
+messages( expectedDuration,
+          [ 'Duration -- two dot separated dates (second bigger) -- were expected. ' ]
+        ).

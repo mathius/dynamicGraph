@@ -5,11 +5,13 @@
 % date: 2013-05-15
 % responsible for exported functions:
 %       Martin Ukrop (concatenateAtoms/2, numberToAtom/2)
-%       Vladimír Štill ( makePath/3 )
+%       Vladimír Štill ( makePath/3, prefixToLast/3 )
 %
-:- module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1, makePath/3] ).
+:- module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1
+                      , makePath/3, prefixToLast/3 ] ).
 
 :- use_module( messaging, [messages/2, outputMessage/2] ).
+:- use_module( library( lists ), [ reverse/2 ] ).
 
 /* numberToAtom( +Number, -Atom )
 convert number to atom
@@ -58,5 +60,34 @@ openFileForReading( File ) :-
                       )
                     ).
 
+/* makePath( +Directory, +File, -Path )
+* composes path
+* @Directory    directory of path
+* @File         file name of path
+* @path         resulting path
+*/
 makePath( Directory, File, Path ) :-
     concatenateAtoms( [ Directory, '/', File ], Path ).
+
+/* prefixToLast( +Source, +Delimiter, -Prefix )
+* gets londest prefix up to last occurence of given delimiter (excluding delimiter)
+*
+* @Source     atom to find delimiter in
+* @Delimiter  single character atom -- the delimiter
+* @Prefix     prefix of Source up to last occurence of Delimiter
+*/
+prefixToLast( Source, Delimiter, Prefix ) :-
+      atom_chars( Source, SrcChr )
+    , atom_chars( Delimiter, DelChr )
+    , prefixToLastCh( SrcChr, DelChr, PrefChr )
+    , atom_chars( Prefix, PrefChr ).
+
+prefixToLastCh( S, [ D ], P ) :- prefixToLastCh( S, D, [], [], P ).
+
+prefixToLastCh( [], _, _, LastPrefix, Prefix ) :- reverse( LastPrefix, Prefix ).
+prefixToLastCh( [ D | XS ], D, Acc, _, Prefix ) :-
+      !
+    , prefixToLastCh( XS, D, [ D | Acc ], Acc, Prefix ).
+prefixToLastCh( [ X | XS ], D, Acc, LastPrefix, Prefix ) :-
+    prefixToLastCh( XS, D, [ X | Acc ], LastPrefix, Prefix ).
+    
