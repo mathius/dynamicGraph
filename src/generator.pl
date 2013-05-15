@@ -11,7 +11,7 @@
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utilities ).
+:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
 :- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
 
 graphGenerate :- graphGenerate( user ).
@@ -24,6 +24,7 @@ graphGenerate( File ) :-
     , see( OldFile )
     , ! % we dont want to backtrack to user input if validity fails!
     , checkValidity
+    , optional( File )
     , runGenerator( Edges )
     , writeFile( Edges )
     , unload( Preds ).
@@ -43,7 +44,14 @@ unload( [ P | PS ] ) :- retract( P ), unload( PS ).
 checkValidity :- clause( vertices(_), _ ), clause( edges(_,_), _ ), clause( newEdge(_,_), _ )
     , clause( removeEdge(_,_,_), _ ), clause( duration(_,_), _ ).
 
-% TODO
+optional( File ) :- 
+    (   clause( name(_), _ )
+      , ! 
+    ;   prefixToLast( File, '.', Prefix )
+      , concatenateAtoms( [ Prefix, '.graph.pl' ], Name )
+      , assertz( name( Name ) )
+    ).
+
 runGenerator( Closed ) :-
       getGenerator( Gen )
     , ! % disallow backtracting to getGenerator which is deterministic
@@ -81,17 +89,10 @@ genForEachMinute( G, G ) :-
       G = gen( _, _, FromTime, ToTime, _, _ )
     , FromTime > ToTime
     , !
-    , write( '.' ).
+    .
 genForEachMinute( Gen, GenOut ) :-
       genMinute( Gen, Gen0 )
     , !
-    , write( ':' )
-    %%%%%%%%%%%%%%%%
-    , getFromTime( Gen0, Minute )
-    , timeConversion( Minute, M )
-    , write( M )
-    , nl
-    %%%%%%%%%%%%%%%%
     , addMinute( Gen0, Gen1 )
     , genForEachMinute( Gen1, GenOut ).
 
@@ -125,13 +126,10 @@ queueClosed( G0, [ e( X, Y, _, _ ) | ES ], Before, GOut ) :-
 removeEdges( _, [], [], C, C ) :- !. % finally append already closed edges and finish opened
 % edge is removed -> it is closed
 removeEdges( Minute, [ e( V1, V2, TStart ) | OS ], OSOut, [ e( V1, V2, TStart, Minute ) | CS ], C ) :-
-%    write( ', processing ' ), write( e( V1, V2, TStart ) ),
-%    ( ground( V1 ) ; write( OS ) ),
       TD is Minute - TStart
     , removeEdge( Minute, TD, Probability )
     , maybe( Probability ) % fails with probability 1 - Probability
     , !
-%    , write( ', closed: ' ), write( e( V1, V2, TStart, Minute ) )
     , removeEdges( Minute, OS, OSOut, CS, C ).
 
 removeEdges( Minute, [ E | OS ], [ E | OSOut ], CS, C ) :- % edge is not to be removed
@@ -166,7 +164,6 @@ genNonEmptyQueue( G, Qa, Probability, Min, Cnt, Max, GOut ) :-
     , dequeue( QA, e( V1, V2 ), QA1 )
     , getOpen( G, OS )
     , getFromTime( G, Minute )
-%    , write( ', adding ' ), write( e( V1, V2, Minute ) )
     , setOpen( G, [ e( V1, V2, Minute ) | OS ], G1 )
     , setQueue( G1, QA1, G2 )
     , Cnt1 is Cnt + 1
@@ -194,7 +191,6 @@ fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :- % Min > Cnt
     , dequeue( Qa, e( V1, V2 ), Qa1 )
     , getOpen( G, OS )
     , getFromTime( G, Minute )
-%    , write( ', filling ' ), write( e( V1, V2, Minute ) )
     , setOpen( G, [ e( V1, V2, Minute ) | OS ], G1 )
     , Cnt1 is Cnt + 1
     , fillMinimum( G1, Qa1, Probability, Min, Cnt1, GOut ).
@@ -210,6 +206,9 @@ writeFile( ES ) :-
     , telling( OldFile )
     , told
     , tell( File )
+    , name( Name )
+    , write( 'name( \'' ), write( Name ), write( '\' ).' )
+    , nl
     , writeFile1( ES )
     , told
     , write( 'finished.' )
