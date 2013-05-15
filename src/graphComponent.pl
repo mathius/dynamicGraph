@@ -39,6 +39,11 @@ computeComponents:- computeComponents(getNeighbour).
 computeComponents(NeighbourPred):-
     clearComponents,
     (labelComponents(NeighbourPred) ; true).
+     
+     
+
+     
+     
                                                                                             
 clearComponents:- 
     retract( component(_,_)) , fail
@@ -66,7 +71,7 @@ propagateLabel(NeighbourPred, NodeName, Label):-
     call(NeighbourPred, NodeName, Neighbour),
     notLabeled(Neighbour),
     labelNode(Neighbour, Label),
-    propagateLabel(Neighbour, Label),
+    propagateLabel(NeighbourPred,Neighbour, Label),
     fail.
 
 getNeighbour(Name, Out):- edge(Name, Out, _, _).
@@ -77,4 +82,26 @@ notLabeled(Name):-
     fail)
     ;
     true.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+getComponentList(Out):-
+    findall(component(Name,Label), component(Name,Label), CompList),
+    processCompList(CompList, Out).
     
+processCompList(CompList,Out):- processCompList(CompList, [], Out).
+processCompList([], Out , Out).
+processCompList([component(Node,Label)|Rest], Accum, Out):-
+    updateCompAccum(Accum, Node, Label, Accum2), !,
+    processCompList(Rest, Accum2, Out).
+
+updateCompAccum([], Node, Label, [comp(Label, [Node])]).
+updateCompAccum([ comp(Label, List)|_Rest], 
+                Node, Label,
+                [ comp(Label, [Node|List])|_Rest]).
+                
+updateCompAccum([ X|Rest], Node, Label, [ X|Out]):-
+    updateCompAccum(Rest, Node, Label, Out).                

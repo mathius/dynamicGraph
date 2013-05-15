@@ -6,12 +6,14 @@
 % responsible for exported functions:
 %       Andrej Krejcir(statsNodes/0, statsEdges/0, statsAnalyseNode/1)
 %
-:- module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
+:- module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1, statsComponents/0] ).
 
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( graph, [edge/4] ).
+:- use_module( graphComponent, [component/2, computeComponents/0, computeComponents/1]).
+:- use_module( graphManipulation, [graphInMoment/1, edge/2, initialize/1, advanceMinute/1] ).
 :- use_module(library(lists)).
                                                
 
@@ -195,4 +197,17 @@ printNeighbours([neighbour(Name,B,E)|Rest]):-
     printNeighbours(Rest).
     
     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+statsComponents:-
+    timeInterval(Begin,End),
+    initialize(_),
+    graphInMoment(Begin),
+    computeComponents(stats:neighbourInMoment),
+    getComponentList(CompList).
     
+      
+    
+neighbourInMoment(Name,Out) :- edge(Name,Out).
+neighbourInMoment(Name,Out) :- edge(Out, Name).
+        

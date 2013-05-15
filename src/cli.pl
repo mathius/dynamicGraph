@@ -39,7 +39,7 @@ validCommand( graphviz, 1, enableGraphviz ).
 validCommand( graphvizOff, 0, disableGraphviz ).
 validCommand( statsNodes, 0, statsNodes ).
 validCommand( statsEdges, 0, statsEdges ).
-validCommand( statsComponents, 0, notImplemented ).
+validCommand( statsComponents, 0, statsComponents ).
 validCommand( statsProgress, 0, printChangeList ).
 validCommand( statsAnalyseNode, 1, statsAnalyseNode ).
 validCommand( statsMaxComponent, 0, notImplemented ).
