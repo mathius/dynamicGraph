@@ -55,13 +55,7 @@ loadGraph( File ) :-
         seeing( OldInputStream ),
         seen,
         ( openFileForReading( File ) -> readTerms( Status0 ) ; Status0 = error ),
-        (       graphName(_), Status1 = Status0 
-                ; 
-                messages( graphNoName, [Message] ),
-                outputMessage( error, [Message] ),
-                Status1 = error 
-        ),
-        ( Status1 == success -> initializeGraph( Status ) ; Status = Status1 ),
+        ( Status0 == success -> initializeGraph( Status ) ; Status = Status0 ),
         printResultMessage( Status ),
         seen,
         see( OldInputStream ),
@@ -90,7 +84,14 @@ processed term falls into one of 4 categories
                             success (ok, this was the last term, stop processing)
                             error (error occured, stop processing)
 */
-processTerm( end_of_file, success ).
+processTerm( end_of_file, Status ) :-
+        graphName(_), 
+        Status = success,
+        !
+        ; 
+        messages( graphNoName, [Message] ),
+        outputMessage( error, [Message] ),
+        Status = error.
 processTerm( name( GraphName ), Status ) :-
         graphName( OldName ),
         messages( dupliciteGraphName, [Info, OldPrefix, NewPrefix] ),
