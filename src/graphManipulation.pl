@@ -64,7 +64,10 @@ deleteGraphMoment :-
 advanceMinute( NextMinute ) :-
       retract( changesTail( Changes ) )
     , !
-    , advanceMinute( Changes, NextMinute ).
+    ,  advanceMinute( Changes, NextMinute ). 
+      %  ;
+      %  assertz( changesTail( Changes ) ), fail
+      %).
 
 /* initializeGraph( -Success )
 * Loads initial configuration of graph
@@ -149,8 +152,9 @@ setupMoment( Moment ) :-
     ( Moment < CTime, !, resetChanges
     ; true
     )
-    , fastForwardChanges( Moment ).
-
+    , fastForwardChanges( Moment )
+    , assertz( currentTime(Moment) ).
+    
 resetChanges :-
       retractall( changesTail( _ ) )
     , changeList( _, _, Changes )
@@ -162,7 +166,9 @@ fastForwardChanges( Moment ) :-
     , assertz( changesTail( ForwardChanges ) ).
 
 fastForwardChanges( _, [], [] ) :- !.
-fastForwardChanges( Moment, [ minute( Moment, _ ) | NextChanges ], NextChanges ) :- !.
+%  fastForwardChanges( Moment, [ minute( Moment, _ ) | NextChanges ], NextChanges ) :- !.
+fastForwardChanges( Moment, [ minute( Time, Ch ) | NextChanges ],  
+                            [ minute( Time, Ch ) | NextChanges ] ) :- Time > Moment, !.
 fastForwardChanges( Moment, [ _ | NextChanges ], ForwardChanges ) :-
     fastForwardChanges( Moment, NextChanges, ForwardChanges ).
 

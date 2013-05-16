@@ -22,18 +22,18 @@
 
 % utility
 
-filter(Pred, [], []).
+filter(_Pred, [], []).
 filter(Pred, [X|Rest], [X|Out]):-
     call(Pred,X),!,
     filter(Pred,Rest,Out).
 filter(Pred, [_|Rest], Out) :- filter(Pred, Rest, Out).
 
-all(Pred, []).
+all(_Pred, []).
 all(Pred, [H|Rest]):-
     call(Pred,H),!,
     all(Pred, Rest).
 
-map(Pred, [], []).
+map(_Pred, [], []).
 map(Pred, [X|Rest], [Y|Out]):-
     call(Pred,X,Y),!,
     map(Pred, Rest, Out).
@@ -177,7 +177,7 @@ statsAnalyseNode(NodeName):-
     outputMessage(info, [NeighboursMsg]),
     printNeighbours(Neighbours).
 
-statsAnalyseNode(NodeName):-
+statsAnalyseNode(_NodeName):-
     messages(noNode, Msg),
     outputMessage(error, Msg).    
     
@@ -214,7 +214,7 @@ printNeighbours([neighbour(Name,B,E)|Rest]):-
 Print information about components at the begining of time interval
 */
 statsComponents:-
-    timeInterval(Begin,End),
+    timeInterval(Begin,_),
     graphInMoment(Begin),
     computeComponents,
     getComponentList(CompList),
@@ -229,7 +229,7 @@ Print information about the biggest component in the time interval
 */
 statsMaxComponent:-
     timeInterval(Begin,End),
-    graphInMoment(Begin)
+    graphInMoment(Begin),
     findMaxComponent(Begin-End ,Time,Comp),
     timeToAtom(Time, TimeA),
     messages(compTime, [TimeMsg]),
@@ -247,9 +247,9 @@ statsMaxComponent:-
     
 
 findMaxComponent(Begin-End, OutTime, OutComp):-
-    startOfTime(StartTime),         
+    %startOfTime(StartTime),         
     getMaxCompInMoment(Comp), !,
-    checkNextMoment(Begin-End, StartTime, Comp, MaxTime, MaxComp),!,
+    checkNextMoment(Begin-End, Begin, Comp, MaxTime, MaxComp),!,
     (
         inInterval(Begin,End, MaxTime), !, 
         OutComp = MaxComp, OutTime = MaxTime    
@@ -264,7 +264,7 @@ checkNextMoment(Interval, PrevTime, PrevComp, OutTime, OutComp):-
     processComponents(Interval, PrevTime, PrevComp, NewTime, NewComp, Time, Comp), !,
     checkNextMoment(Interval, Time, Comp, OutTime, OutComp).
     
-checkNextMoment(Interval, OutTime, OutComp, OutTime, OutComp).
+checkNextMoment(_Interval, OutTime, OutComp, OutTime, OutComp).
 
 getMaxCompInMoment(Comp):-
     computeComponents,
@@ -282,20 +282,20 @@ processComponents(Begin-End, Time1, Comp1, Time2, Comp2, OutTime, OutComp):-
         OutTime = Time1, OutComp = Comp1
     ).
     
-processComponents(Begin-End, Time1, Comp1, Time2, Comp2, Time2, Comp2):-
+processComponents(Begin-_End, _Time1, _Comp1, Time2, Comp2, Time2, Comp2):-
     Time2 < Begin, !.
     
-processComponents(Begin-End, Time1, Comp1, Time2, Comp2, Time1, Comp1):-
+processComponents(_Begin-End, Time1, Comp1, Time2, _Comp2, Time1, Comp1):-
     Time2 > End.
 
  
 inInterval(B,E,X):- X >= B, X =< E.   
-clamp(X,B,E,B):- X < B.
-clamp(X,B,E,E):- X > E.
+clamp(X,B,_,B):- X < B.
+clamp(X,_,E,E):- X > E.
 clamp(X,_,_,X). 
  
     
-compSize(comp(Label, NodeList), Out):- length(NodeList, Out).
+compSize(comp(_, NodeList), Out):- length(NodeList, Out).
     
 printComponent( comp(Label, NodeList) ):-
     messages(compLabel, [CompLabelMsg]),

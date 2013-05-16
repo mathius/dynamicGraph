@@ -12,6 +12,11 @@
 :- use_module( utilities, [ makePath/3, concatenateAtoms/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ).
 
+
+
+:- dynamic graphvizDirectory/1.
+
+
 /* enableGraphviz( +Dir )
 * enabled graphviz output to given directory
 * @param Dir      directory to be used as base path for saving
