@@ -222,3 +222,4 @@ messages( expectedDuration,
         ).
 messages( graphvizEnabled, [ 'Graphviz output enabled to directory ' ] ).
 messages( graphvizDisabled, [ 'Graphviz output disabled.' ] ).
+messages( graphvizWritten, [ 'Graphviz file writtern to ' ] ).

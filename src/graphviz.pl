@@ -64,7 +64,10 @@ plotGraphIfEnabled( OutputFile, Highlight, Color ) :-
     , write( '}' )
     , nl
     , told
-    , tell( OldFile ).
+    , tell( OldFile )
+    , messages( graphvizWritten, [ GW ] )
+    , concatenateAtoms( [ GW, '\'', OutputPath, '\'.' ], Mesg )
+    , outputMessage( info, [ Mesg ] ).
 % case if disabled
 plotGraphIfEnabled( _, _, _ ).
 
