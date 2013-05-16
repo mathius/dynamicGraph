@@ -220,3 +220,5 @@ messages( expected2Numbers, [ 'Two numbers separated by dot were expected. ' ] )
 messages( expectedDuration,
           [ 'Duration -- two dot separated dates (second bigger) -- were expected. ' ]
         ).
+messages( graphvizEnabled, [ 'Graphviz output enabled to directory ' ] ).
+messages( graphvizDisabled, [ 'Graphviz output disabled.' ] ).

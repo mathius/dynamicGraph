@@ -9,18 +9,29 @@
 
 :- use_module( library( lists ) ).
 :- use_module( graphManipulation, [edge/2] ).
-:- use_module( utilities, [ makePath/3 ] ).
+:- use_module( utilities, [ makePath/3, concatenateAtoms/2 ] ).
+:- use_module( messaging, [ outputMessage/2, messages/2 ] ).
 
 /* enableGraphviz( +Dir )
 * enabled graphviz output to given directory
 * @param Dir      directory to be used as base path for saving
 */
-enableGraphviz( Dir ) :- disableGraphviz, assertz( graphvizDirectory( Dir ) ).
+enableGraphviz( Dir ) :- 
+      disableGraphvizInt
+    , assertz( graphvizDirectory( Dir ) )
+    , messages( graphvizEnabled, [ GE ] )
+    , concatenateAtoms( [ GE, '\'', Dir, '\'', '.' ], Msg )
+    , outputMessage( info, [ Msg ] ).
 
 /* disableGraphviz
 * disabled graphviz output.
 */
-disableGraphviz :- retractall( graphvizDirectory( _ ) ).
+disableGraphviz :-
+      disableGraphvizInt
+    , messages( graphvizDisabled, M )
+    , outputMessage( info, M ).
+
+disableGraphvizInt :- retractall( graphvizDirectory( _ ) ).
 
 /* plotGraph( +OutputFile, +Edges )
 saves plot of graph given by edges currently in database
