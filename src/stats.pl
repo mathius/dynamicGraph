@@ -12,10 +12,11 @@
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
-:- use_module( graph, [edge/4] ).
+:- use_module( graph, [graphName/1 ,edge/4] ).
 :- use_module( graphComponent, [component/2, computeComponents/0, getComponentList/1]).
 :- use_module( graphManipulation, [graphInMoment/1, edge/2, initializeGraph/1, 
                 advanceMinute/1, startOfTime/1, endOfTime/1] ).
+:- use_module( graphviz, [plotGraph/1, plotGraph/3]).
 :- use_module(library(lists)).
                                                
 
@@ -164,6 +165,9 @@ shortestEdge(List,Out) :- listMin(edgeLength, List, Out).
 
 %%%%%%%%%%%%%%%%%%%%%%
 
+/* statsAnalyseNode/1
+Print information about selected node
+*/
 statsAnalyseNode(NodeName):-
     nodeExists(NodeName), !,
     getNeighbours(NodeName, Neighbours),
@@ -206,38 +210,54 @@ printNeighbours([neighbour(Name,B,E)|Rest]):-
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+/* statsComponents/0
+Print information about components at the begining of time interval
+*/
 statsComponents:-
     timeInterval(Begin,End),
     initializeGraph(_),
     graphInMoment(Begin),
     computeComponents,
     getComponentList(CompList),
-    all(printComponent, CompList).
+    all(printComponent, CompList),
+    graphName(GName),
+    numberToAtom(Begin, TimeA),
+    concatenateAtoms([GName,' ', TimeA,'.dot'], Filename),
+    plotGraph(Filename).
     
-
+/* statsMaxComponent/0
+Print information about the biggest component in the time interval
+*/
 statsMaxComponent:-
     timeInterval(Begin,End),
     initializeGraph(_),
     findMaxComponent(Begin-End ,Time,Comp),
-    clamp(Time, Begin, End, CTime),
-    timeToAtom(CTime, TimeA),
+    timeToAtom(Time, TimeA),
     messages(compTime, [TimeMsg]),
     concatenateAtoms([TimeMsg, TimeA], Msg),
     outputMessage(info, [Msg]),
-    (
-        inInterval(Begin,End, Time), !, 
-        printComponent(Comp)    
-        ;
-        nodeExists(Node), !,
-        printComponent(comp(Node,[Node]))
-    ).
+    printComponent(Comp),
+    
+    graphInMoment(Time),
+    graphName(GName),
+    numberToAtom(Time, TimeA2),
+    concatenateAtoms([GName,' ', TimeA2,'.dot'], Filename),
+    comp(_, NodeList) = Comp,
+    plotGraph(Filename, NodeList, 'red').
     
     
 
-findMaxComponent(Interval, OutTime, OutComp):-
+findMaxComponent(Begin-End, OutTime, OutComp):-
     startOfTime(StartTime),         
     getMaxCompInMoment(Comp), !,
-    checkNextMoment(Interval, StartTime, Comp, OutTime, OutComp).
+    checkNextMoment(Begin-End, StartTime, Comp, MaxTime, MaxComp),!,
+    (
+        inInterval(Begin,End, MaxTime), !, 
+        OutComp = MaxComp, OutTime = MaxTime    
+        ;
+        nodeExists(Node), !,
+        OutComp = comp(Node,[Node]), clamp(MaxTime, Begin, End, OutTime)
+    ).
     
 checkNextMoment(Interval, PrevTime, PrevComp, OutTime, OutComp):-
     advanceMinute(NewTime),
