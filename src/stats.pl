@@ -69,7 +69,11 @@ statsNodes :-
     numberToAtom(L, AtomL),    
     concatenateAtoms([LenMsg, AtomL], MsgLength),
     outputMessage(info, [MsgLength]),
-    printNodes(Nodes),
+    (   L =< 10, !,
+        printNodes(Nodes)
+        ;
+        true
+    ),
     maxDegreeNode(Nodes,NMax),
     minDegreeNode(Nodes,NMin),
     messages(nodeMax, [MaxMsg]),
@@ -219,9 +223,7 @@ statsComponents:-
     computeComponents,
     getComponentList(CompList),
     all(printComponent, CompList),
-    graphName(GName),
-    numberToAtom(Begin, TimeA),
-    concatenateAtoms([GName,' ', TimeA,'.dot'], Filename),
+    graphvizFilename(Begin, Filename),
     plotGraph(Filename).
     
 /* statsMaxComponent/0
@@ -237,13 +239,11 @@ statsMaxComponent:-
     printComponent(Comp),
     
     graphInMoment(Time),
-    graphName(GName),
-    numberToAtom(Time, TimeA2),
-    concatenateAtoms([GName,' ', TimeA2,'.dot'], Filename),
+    graphvizFilename(Time,Filename),
     comp(_, NodeList) = Comp,
     plotGraph(Filename, NodeList, 'red').
     
-    
+   
 
 findMaxComponent(Begin, End, OutTime, OutComp):-
     graphInMoment(Begin),      
@@ -309,5 +309,17 @@ printComponent( comp(Label, NodeList) ):-
 addSeparator(SepA, Atom, Out):- atom_concat(Atom,SepA,Out).
     
     
+graphvizFilename(Time, Filename):-
+    graphName(GName),
+    timeConversion( Time, Year-Month-Day+Hour:Minute),
+    numberToAtom( Year, YearA ),
+    numberToAtom( Month, MonthA ),
+    numberToAtom( Day, DayA ),
+    numberToAtom( Hour, HourA ),
+    numberToAtom( Minute, MinuteA ),
+    concatenateAtoms( [YearA,'-',MonthA,'-',DayA,'_',HourA,'-',MinuteA], TimeA ),
+    concatenateAtoms([GName,'_', TimeA,'.dot'], Filename).
     
+    
+        
         
