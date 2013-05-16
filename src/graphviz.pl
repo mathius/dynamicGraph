@@ -3,9 +3,11 @@
 % Description to be added.
 %
 % date: 2013-05-14
-% authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1, plotGraph/3 )
+% authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1
+%                         , plotGraph/3, graphvizEnabled/0 )
 %
-:- module( graphviz, [ enableGraphviz/1, disableGraphviz/0, plotGraph/1, plotGraph/3 ] ).
+:- module( graphviz, [ enableGraphviz/1, disableGraphviz/0, plotGraph/1
+                     , plotGraph/3, graphvizEnabled/0 ] ).
 
 :- use_module( library( lists ) ).
 :- use_module( graphManipulation, [edge/2] ).
@@ -16,6 +18,10 @@
 
 :- dynamic graphvizDirectory/1.
 
+/* graphvizEnabled
+* succeeds iff graphviz is enabled
+*/
+graphvizEnabled :- graphvizDirectory( _ ).
 
 /* enableGraphviz( +Dir )
 * enabled graphviz output to given directory
