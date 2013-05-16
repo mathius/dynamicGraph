@@ -12,7 +12,7 @@
 :- use_module( library( random ) ).
 :- use_module( queue ).
 :- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
-:- use_module( time, [ timeConversion/2, timeToAtom/2 ] ).
+:- use_module( time, [ timeConversion/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
 graphGenerate :-
@@ -170,7 +170,9 @@ optional( File ) :-
     ).
 
 runGenerator( Closed ) :-
-      getGenerator( Gen )
+      messages( generating, G )
+    , outputMessage( info, G )
+    , getGenerator( Gen )
     , ! % disallow backtracting to getGenerator which is deterministic
     , genForEachMinute( Gen, GenOut )
     , getClosed( GenOut, Closed ).
@@ -317,14 +319,14 @@ fillMinimum( G, Qa, Probability, Min, Cnt, GOut ) :- % Min > Cnt & not adding
 
 writeFile( [] ) :- write( 'empty' ).
 writeFile( ES ) :-
-      name( File )
+      name( Name )
+    , concatenateAtoms( [ Name, '.pl' ], File )
     , messages( writtingFile, [ MSG ] )
     , concatenateAtoms( [ MSG, File, '...' ], FinMsg )
     , outputMessage( info, [ FinMsg ] )
     , telling( OldFile )
     , told
     , tell( File )
-    , name( Name )
     , write( 'name( \'' ), write( Name ), write( '\' ).' )
     , nl
     , writeFile1( ES )
@@ -335,7 +337,7 @@ writeFile( ES ) :-
 
 writeFile1( [] ).
 writeFile1( [ e( V1, V2, F, T ) | ES ] ) :-
-      timeToAtom( F, From )
+      timeConversion( F, From )
     , Dur is T - F
     , write( e( V1, V2, From, Dur ) )
     , write( '.' )

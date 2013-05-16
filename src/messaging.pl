@@ -201,6 +201,7 @@ messages( finished, [ 'Finished.' ] ).
 messages( writtingFile, [ 'Writing to file: ' ] ).
 messages( missingPredicate, [ 'Missing predicate: ' ] ).
 messages( nothingGenerated, [ 'Nothing generated.' ] ).
+messages( generating, [ 'Generating graph...' ] ).
 
 messages( askName, [ 'Enter name of graph: ' ] ).
 messages( askNodes, [ 'Enter number of nodes: ' ] ).
