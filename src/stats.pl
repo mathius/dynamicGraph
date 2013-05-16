@@ -16,7 +16,7 @@
 :- use_module( graphComponent, [component/2, computeComponents/0, getComponentList/1]).
 :- use_module( graphManipulation, [graphInMoment/1, edge/2, 
                 advanceMinute/1, startOfTime/1, endOfTime/1] ).
-:- use_module( graphviz, [plotGraph/1, plotGraph/3]).
+:- use_module( graphviz, [plotGraph/1, plotGraph/3, graphvizFilename/2]).
 :- use_module(library(lists)).
                                                
 
@@ -307,19 +307,5 @@ printComponent( comp(Label, NodeList) ):-
     outputMessage(info, [Msg3, '']).
     
 addSeparator(SepA, Atom, Out):- atom_concat(Atom,SepA,Out).
-    
-    
-graphvizFilename(Time, Filename):-
-    graphName(GName),
-    timeConversion( Time, Year-Month-Day+Hour:Minute),
-    numberToAtom( Year, YearA ),
-    numberToAtom( Month, MonthA ),
-    numberToAtom( Day, DayA ),
-    numberToAtom( Hour, HourA ),
-    numberToAtom( Minute, MinuteA ),
-    concatenateAtoms( [YearA,'-',MonthA,'-',DayA,'_',HourA,'-',MinuteA], TimeA ),
-    concatenateAtoms([GName,'_', TimeA,'.dot'], Filename).
-    
-    
         
         
