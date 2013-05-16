@@ -14,7 +14,7 @@
 :- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
 :- use_module( graph, [graphName/1 ,edge/4] ).
 :- use_module( graphComponent, [component/2, computeComponents/0, getComponentList/1]).
-:- use_module( graphManipulation, [graphInMoment/1, edge/2, initializeGraph/1, 
+:- use_module( graphManipulation, [graphInMoment/1, edge/2, 
                 advanceMinute/1, startOfTime/1, endOfTime/1] ).
 :- use_module( graphviz, [plotGraph/1, plotGraph/3]).
 :- use_module(library(lists)).
@@ -215,7 +215,6 @@ Print information about components at the begining of time interval
 */
 statsComponents:-
     timeInterval(Begin,End),
-    initializeGraph(_),
     graphInMoment(Begin),
     computeComponents,
     getComponentList(CompList),
@@ -230,7 +229,7 @@ Print information about the biggest component in the time interval
 */
 statsMaxComponent:-
     timeInterval(Begin,End),
-    initializeGraph(_),
+    graphInMoment(Begin)
     findMaxComponent(Begin-End ,Time,Comp),
     timeToAtom(Time, TimeA),
     messages(compTime, [TimeMsg]),
