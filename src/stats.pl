@@ -62,7 +62,7 @@ listMin(Pred, [_|Rest], X, Out) :- listMin(Pred, Rest, X, Out).
 Print statistics about nodes in the graph
 */
 statsNodes :-
-    findall(ed(X,Y,B,E), edge(X,Y,B,E), Edges),
+    findall(ed(X,Y), edge(X,Y,_,_), Edges),
     getListOfNodes(Edges,Nodes),
     length(Nodes,L),
     messages(numberOfNodes, [LenMsg]),
@@ -90,7 +90,7 @@ printNode(node(Name,Degree)):-
         
 getListOfNodes(Edges,Out):- getListOfNodes(Edges, [], Out).
 getListOfNodes([],Out,Out).
-getListOfNodes([ed(X,Y,_,_)|Rest],Accum,Out):-
+getListOfNodes([ed(X,Y)|Rest],Accum,Out):-
     updateNodeSet(X,Accum,Accum1),
     updateNodeSet(Y,Accum1,Accum2),!,
     getListOfNodes(Rest,Accum2,Out).
@@ -229,8 +229,7 @@ Print information about the biggest component in the time interval
 */
 statsMaxComponent:-
     timeInterval(Begin,End),
-    graphInMoment(Begin),
-    findMaxComponent(Begin-End ,Time,Comp),
+    findMaxComponent(Begin, End ,Time,Comp),
     timeToAtom(Time, TimeA),
     messages(compTime, [TimeMsg]),
     concatenateAtoms([TimeMsg, TimeA], Msg),
@@ -246,10 +245,10 @@ statsMaxComponent:-
     
     
 
-findMaxComponent(Begin-End, OutTime, OutComp):-
-    %startOfTime(StartTime),         
+findMaxComponent(Begin, End, OutTime, OutComp):-
+    graphInMoment(Begin),      
     getMaxCompInMoment(Comp), !,
-    checkNextMoment(Begin-End, Begin, Comp, MaxTime, MaxComp),!,
+    checkNextMoment(End, Begin, Comp, MaxTime, MaxComp),!,
     (
         inInterval(Begin,End, MaxTime), !, 
         OutComp = MaxComp, OutTime = MaxTime    
@@ -258,11 +257,11 @@ findMaxComponent(Begin-End, OutTime, OutComp):-
         OutComp = comp(Node,[Node]), clamp(MaxTime, Begin, End, OutTime)
     ).
     
-checkNextMoment(Interval, PrevTime, PrevComp, OutTime, OutComp):-
-    advanceMinute(NewTime),
+checkNextMoment(End, PrevTime, PrevComp, OutTime, OutComp):-
+    advanceMinute(NewTime),    
     getMaxCompInMoment(NewComp),
-    processComponents(Interval, PrevTime, PrevComp, NewTime, NewComp, Time, Comp), !,
-    checkNextMoment(Interval, Time, Comp, OutTime, OutComp).
+    processComponents(End, PrevTime, PrevComp, NewTime, NewComp, Time, Comp), !,
+    checkNextMoment(End, Time, Comp, OutTime, OutComp).
     
 checkNextMoment(_Interval, OutTime, OutComp, OutTime, OutComp).
 
@@ -271,8 +270,8 @@ getMaxCompInMoment(Comp):-
     getComponentList(CompList),
     listMax(compSize, CompList, Comp).
 
-processComponents(Begin-End, Time1, Comp1, Time2, Comp2, OutTime, OutComp):-
-    inInterval(Begin,End,Time2),!,
+processComponents(End, Time1, Comp1, Time2, Comp2, OutTime, OutComp):-
+    Time2 =< End,!,
     compSize(Comp1, Size1),
     compSize(Comp2, Size2),
     (
@@ -282,12 +281,7 @@ processComponents(Begin-End, Time1, Comp1, Time2, Comp2, OutTime, OutComp):-
         OutTime = Time1, OutComp = Comp1
     ).
     
-processComponents(Begin-_End, _Time1, _Comp1, Time2, Comp2, Time2, Comp2):-
-    Time2 < Begin, !.
-    
-processComponents(_Begin-End, Time1, Comp1, Time2, _Comp2, Time1, Comp1):-
-    Time2 > End.
-
+processComponents(_End, Time1, Comp1, _Time2, _Comp2, Time1, Comp1).
  
 inInterval(B,E,X):- X >= B, X =< E.   
 clamp(X,B,_,B):- X < B.
