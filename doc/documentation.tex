@@ -1,0 +1,508 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{lmodern} % newer fonts
+\usepackage[T1]{fontenc} % to make text copyable, before inputenca
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{a4wide}
+\usepackage[fleqn]{amsmath}  %matematické rovnice
+\usepackage{amssymb}  %dvojitý fonty...
+\usepackage{amsthm}   %důkazy
+%\usepackage{latexsym}   %\box
+\usepackage{IEEEtrantools} %lepší bloky rovnic
+\usepackage{tabulary} %tabulky
+
+\usepackage{xcolor}
+\definecolor{dark-red}{rgb}{0.6,0.15,0.15}
+\definecolor{dark-green}{rgb}{0.15,0.4,0.15}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\usepackage[ plainpages=false
+           , pdfpagelabels
+           , unicode
+           , draft=false
+           , colorlinks=true
+           , linkcolor={dark-red}
+           , citecolor={dark-green}
+           , urlcolor={medium-blue}
+           ]{hyperref}
+
+
+%\addtolength{\headsep}{-0.5cm}
+%\addtolength{\textheight}{0.5cm}
+%  \addtolength{\hoffset}{-1.6cm}
+%  \addtolength{\textwidth}{1cm}
+
+\usepackage{fancyhdr} %hlavičky
+  \pagestyle{fancy}
+  \fancyhead[RO]{Andrej Krejčír, Vladimír Štill, Martin Ukrop}
+  \fancyhead[LO]{IB013 Program documentation}
+  
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bsl}{\backslash}
+\newcommand{\interval}[2]{\ensuremath{\left(#1, #2\right)}}
+\newcommand{\id}{\,\mathrm{d}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\pro}{\text{pro }}
+
+\newcommand{\pl}[1]{\texttt{#1}} % maybe there is better way -- listing??
+
+\newcommand{\Oh}[1]{\ensuremath{\mathcal{O}\left(#1\right)}}
+%\usepackage{graphicx}
+\usepackage{csquotes}
+% Nastaveni spravnych ceskych uvozovek
+%\renewcommand{\uv}[1]{\quotedblbase #1\textquotedblleft}
+%\newcommand{\uvv}[1]{\quotesinglbase #1\textquoteleft}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage[final]{listings}
+
+% adjust line number margin
+\newlength{\MaxSizeOfLineNumbers}%
+\settowidth{\MaxSizeOfLineNumbers}{\scriptsize 99:\ \,}% Adjust to maximum number of lines
+
+\lstset{ language=Prolog
+       , numberstyle=\scriptsize
+       , numbers=left
+       }
+
+\makeatletter
+\def\lst@PlaceNumber{%
+    \makebox[\MaxSizeOfLineNumbers][r]{\normalfont\lst@numberstyle{\thelstnumber:\ \,}}%
+}
+\makeatother
+
+\usepackage{verbatim}
+
+\theoremstyle{plain}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{conseq}[lemma]{Důsledek}
+\theoremstyle{definition}
+\newtheorem{definition}[lemma]{Definice}
+\theoremstyle{remark}
+\newtheorem{remark}[lemma]{Poznámka}
+
+\newcommand{\qq}[1]{\textit{\textcolor{red}{#1}}}
+\newcommand{\gv}{\textit{Graphviz}}
+
+\begin{document}
+\title{{\Huge DynamicGraph} \\ {\large Project documentation for IB013 Logic Programming} }
+\author{Andrej Krejčír, Vladimír Štill, Martin Ukrop}
+\date{\today}
+\maketitle
+
+\section{User interface}
+
+DynamicGraph provides interactive command line interface. After running the compiled binary (or calling the
+top level predicate \pl{dynamicGraph/0}), basic program info is displayed followed by the internal command prompt (\pl{|: }).
+ All the commands are using Prolog predicate syntax - i. e. they must always end with a dot character (\pl{.}) 
+ with optional parameters in parentheses before it. Commands are divided into several categories.
+
+The interactive interface holds several global settings that can be altered by specific commands. 
+These settings include currently loaded graph, boundaries of the time interval and status of the \gv{} support. 
+Settings are stored as facts dynamically added to program database.
+
+\subsection{Graph manipulating commands}
+\begin{itemize}
+\item \pl{graphLoad/1}, \pl{gl/1} \\
+Load graph from specified file. Syntax of the file contents is checked, if it is not correct, file is not loaded.
+
+\item \pl{graphGenerate/1}, \pl{gg/1} \\
+Generate new graph according to settings in specified file. 
+Syntax of the configuration file is checked, if incorrect, the graph is not generated. 
+After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
+
+\item \pl{graphGenerate/0}, \pl{gg/0} \\
+Generate new graph, parameters are set interactively. 
+Syntax  of the values from user are checked, if incorrect, the graph is not generated. 
+After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
+
+\item \pl{graph/0}, \pl{g/0} \\
+Display info about currently loaded graph - name, number of nodes and number of edges.
+\end{itemize}
+
+\subsection{Time commands}
+
+\begin{itemize}
+\item \pl{timeBegin/1}, \pl{tb/1} \\
+Set beginning of time interval. 
+Time is provided in time stamp format. 
+Input validity is checked.
+
+\item \pl{timeBegin/0}, \pl{tb/0} \\
+Set first edge occurrence as beginning of time interval.
+
+\item \pl{timeEnd/1}, \pl{te/1} \\
+Set end of time interval. 
+Time is provided in time stamp format. 
+Input validity is checked.
+
+\item \pl{timeEnd/0}, \pl{te/0} \\
+Set last edge occurrence as beginning of time interval.
+
+\item \pl{timeInterval/2}, \pl{ti/2} \\
+Set beginning/end of time interval. 
+Equivalent to setting beginning and end separately. 
+Time is provided in time stamp format. 
+Input validity is checked.
+
+\item \pl{timeInterval/0}, \pl{ti/0} \\
+Set time interval from first to last edge occurrence. 
+Equivalent to using \pl{timeBegin/0} with \pl{timeEnd/0}.
+
+\item \pl{timeMoment/1}, \pl{tm/1} \\
+Set both beginning/end of time interval to the same value. 
+Equivalent to using \pl{timeBegin/1} and \pl{timeEnd/1} with the same time stamp.
+
+\item \pl{time/0}, \pl{t/0} \\
+Display currently set time interval (beginning, end).
+\end{itemize}
+
+\subsection{Graphviz output commands}
+
+\begin{itemize}
+\item \pl{graphviz/1}, \pl{gv/1} \\
+Enable \gv{} outputs to specified folder. 
+Folder existence is not checked. 
+All commands providing \gv{} functionality will output to this folder. 
+To change the output folder, run \pl{graphviz/1} again with new parameter.
+
+\item \pl{graphvizOff/0}, \pl{gvo/0} \\
+Disable \gv{} outputs. No following commands will create any \gv{} files.
+\end{itemize}
+
+\subsection{Graph statistics commands}
+
+\begin{itemize}
+\item \pl{statsNodes/0}, \pl{sn/0} \\
+Display statistics for nodes. 
+%For the set time interval, 
+The node with the most and the least (zero included) edges is determined. 
+Displayed is the node name and edge count. 
+In case of multiple results, only the first is displayed. \\
+%\textit{Note: All edges exisiting at least one minute in the time interval are considered.}
+
+\item \pl{statsEdges/0}, \pl{se/0} \\
+Display statistics for edges. 
+%For the set time interval, 
+The edge with the longest and the shortest (but non-zero) duration is determined.  
+Displayed is the edge beginning node, end node and time interval. 
+In case of multiple results, only the first is displayed.
+
+\item \pl{statsComponents/0}, \pl{sc/0} \\
+Display the components at the beginning of the time interval. 
+For each component, its nodes and node count are displayed. 
+If \gv{} support is enabled, graph file for this moment is generated and saved. 
+Graph file name consists of graph name and selected time moment.
+
+\item \pl{statsProgress/0}, \pl{sp/0} \\
+Display times when graph is changing (edge is added or removed). 
+If \gv{} support is enabled, graph file for each of these moments is generated. 
+Graph file names consists of graph name and time moment of the change. \\
+\textit{Note: As a precaution, if the number of files is greater than 10, confirmation is required from the user.}
+
+\item \pl{statsAnalyseNode/1}, \pl{san/1} \\
+Analyse given node specified by its name. 
+All edges to this node in the selected time interval are displayed along with their count.
+
+\item \pl{statsMaxComponent/0}, \pl{smc/0} \\
+Determines the maximal component from all the time moments in the selected interval. 
+For the result component, its nodes, edges and size is displayed. 
+In case of multiple results, only the first is displayed.
+If \gv{} support is enabled, graph file for the moment of the first occurrence of this maximal component is exported.
+In this file, the maximal component is distinguished by colour.
+
+\end{itemize}
+
+\subsection{Miscellaneous other commands}
+
+\begin{itemize}
+\item \pl{help/0}, \pl{h/0} \\
+Display the list of commands with short description.
+
+\item \pl{quit/0}, \pl{q/0} \\
+Quit DynamicGraph session.
+\end{itemize}
+
+\section{File specification}
+\label{sec:files}
+
+\subsection{Graph file}
+\label{sec:files-graph}
+
+The input file contains definitions of edges separated by whitespace
+and a fact defining name of the graph: \pl{name(Name).}
+Edges are defined by prolog predicates: \pl{e(From, To, Timestamp, Duration)},
+they must be defined only by syntactically valid facts (ending with \pl{.}).
+Only one graph can be defined in one file.
+
+\begin{itemize}
+	\item \pl{From} and \pl{To} are names of nodes, using only characters \texttt{a-z A-Z 0-9}
+		and starting with a lowercase letter.	
+		Loop edges are not supported: \pl{From} $\ne$ \pl{To}.
+	\item \pl{Timestamp} is the time when the edge is created,
+		with this format: \pl{YYYY-MM-DD+HH:MM}.
+	\item \pl{Duration} is the number of minutes, how long the edge exists. It must be non-negative
+		and can be written as an arithmetic expression.
+		Zero value means that only nodes are created, no edge between them (which
+        can be used to define disjoint vertices).
+		There can't be multiple edges between two nodes at the same time.
+\end{itemize}
+Example of a valid input file:
+\begin{verbatim}
+name('Name of graph').
+
+e(a, b, 2013-04-08+12:00, 60).
+e(b, c, 2013-04-08+10:00, 200).
+e(c, b, 2013-04-07+22:24, 3000).
+
+% This edge is valid, it starts right after the first ends
+e(a, b, 2013-04-08+13:00, 60).
+
+e(e, f, 2013-04-08+20:00, 0).
+
+\end{verbatim}
+
+\subsection{Graph generator configuration file}
+\label{sec:files-generator}
+
+\begin{itemize}
+    \item Only one graph can be described in one generator file.
+    \item Graph can be named by \pl{name/1}. If name is omitted name of configuration file name
+        up to first dot is used.
+    \item Input file is valid Prolog file.
+    \item Custom predicates can be internally used in configuration file.
+    \item Graph is described by following predicates (all mandatory): 
+        \begin{itemize}
+            \item \pl{vertices/1}
+
+                Number of vertices of graph. For \pl{vertices( V ).}, it must hold that $V > 0$.
+            \item \pl{edges/2}
+
+                Minimal and maximal number of edges at any point in time.
+                For \pl{edges( Min, Max ).}, it must hold that
+                $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$.
+            \item \pl{newEdge/2}
+
+                \pl{newEdge( Time, Probability )} gives probability \pl{Probability} of
+                edge creation at given time \pl{Time} for all possible edges not currently
+                included in graph. It must hold that $0 \le \pl{Probability} \le 1$.
+            \item \pl{removeEdge/3}
+                
+                \pl{removeEdge( Time, Duration, Probability ).} for given time \pl{Time}
+                and given duration \pl{Duration} of edge at \pl{Time} gives
+                probability \pl{Probability} of edge removal (that is probability
+                that given edge will have its current duration).
+                It must hold that $0 \le \pl{Probability} \le 1$.
+            \item \pl{duration/2}
+
+                Time interval in which graph exists. For \pl{duration( BeginTime, EndTime )}
+                it must hold that  $\pl{BeginTime} \le \pl{EndTime}$ and both
+                \pl{BeginTime} and \pl{EndTime} are valid timestamps.
+        \end{itemize}
+
+\end{itemize}
+Two examples of the valid graph generator configuration files follow.
+
+\begin{verbatim}
+% gen_graph_01.pl
+vertices( 16 ).
+edges( 8, 150 ).
+newEdge( _, 0.5 ).
+removeEdge( _, _, 0.5 ).
+duration( 2012-4-5+14:00, 2012-4-7+22:00 ).
+end_of_file.
+
+
+% gen_graph_02.pl
+name( 'test02.pl' ).
+vertices( 256 ).
+edges( 0, ( 256 * 255 ) / 2 ).
+newEdge( 0, 0.9 ).
+newEdge( Time, 0.8 ) :- Time mod 60 =:= 0, !.
+newEdge( _Time, 0.1 ).
+removeEdge( _Time, Duration, Probability ) :-
+    Duration >= 120,
+    !,
+    Probability = 1.
+removeEdge( _Time, Duration, Probability ) :-
+    Probability is duration / 120.
+duration( 1970-1-1+00:00, 2038-1-19+3:14 ).
+\end{verbatim}
+
+\subsection{Graphviz files}
+\label{sec:files-graphviz}
+
+DynamicGraph provides graphical output using the \gv{} library. 
+If this output is enabled (predicate \pl{graphviz/1}), DynamicGraph generates \pl{.dot} files, 
+that can be displayed using the \textit{Dot viewer} from the \gv{} library or processed
+by any software with \texttt{.dot} support.
+For further information of \gv{} and full syntax of \pl{.dot} files, consult \url{http://www.graphviz.org}.
+
+\section{Computing graph statistics}
+\label{sec:computing}
+
+
+%Solution analysis. To be added.
+
+\subsection{Time representation}
+\label{sec:computing-time}
+
+The input time format \pl{YYYY-MM-DD+HH:MM} is internally converted to a single number,
+representing the number of minutes passed since \pl{2013-03-13+19:00}. 
+Similar to UNIX time, but the \textit{Dynamic Graph Epoch} is counted from its birth - the time of registration
+(before registration it was not guaranteed to \textit{live}).
+If the user is in desperate need and uses timestamps before the \textit{Dynamic-Graph-Epoch}, 
+it will internally be represented by a negative number.
+
+\subsection{Graph representation}
+\label{sec:computing-graph} 
+
+The loaded graph is saved to program database. 
+As a result, there can only be one graph loaded at a time. 
+Before a new graph is loaded the old one is deleted form database.
+
+Edges are inserted into program database as facts \pl{edge(From,To,Start,End).}
+
+
+
+%Nodes can be represented as this predicate:
+%\begin{verbatim}
+%node(X) :- edge(X,_,_,_).
+%node(X) :- edge(_,X,_,_).
+%\end{verbatim}
+ 
+\subsection{Graph event list}
+\label{sec:computing-eventlist}
+
+To represent changing graph in time a list of events is constructed.
+The event is a predicate \pl{minute( Time, Changes)}, 
+where \pl{Time} is the time when the event occurred and
+\pl{Changes} is a list of all changes that happen at the time.
+The list contains predicates \pl{addEdge(X,Y)} and \pl{deleteEdge(X,Y)}.
+
+This data structure allows more effective iteration through all states of the graph than a simple linear iteration through all minutes of the time interval. 
+It is saved in the program database.
+
+\subsection{Graph time slice}
+\label{sec:computing-graphSlice}
+
+A time slice of the graph is needed to compute statistics at a single moment. 
+The slice is defined by the predicate \pl{edge(X,Y)}, which defines edges at the current moment. 
+
+The implementation is in the module \pl{graphManipulation}, which exports predicates:
+\begin{itemize}
+\item graphInMoment(+Time) - takes a time, modifies predicates
+	\pl{edge/2} in the database to represent the edges at the specified 
+	moment and updates the event list to contain only future changes.
+	
+\item advanceMinute(-Time) - this predicate uses the event list data
+	 structure. It takes the next element in the list, updates the
+	 \pl{edge/2} according to it and unifies \pl{Time} with the time of
+	 the change.
+It fails if no more changes are in the list.
+\end{itemize} 
+ 
+\subsection{Finding connected components}
+\label{sec:computing-components}
+
+The components are stored as predicate \pl{component(Node,Label)}, which gives each node a label of the component. To label connected nodes DFS is used. It is implemented using backtracking. For a given node, the predicate \pl{edge/2} is used to get its neighbours one at a time and call the propagation recursively. To get all components, the DFS is run for each unlabelled node. 
+ 
+\subsection{Random numbers}
+\label{sec:computing-random}
+
+Random number support is essential in graph generator, to facilitate random
+numbers the \href{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}{\pl{random}}
+library is used.
+
+\iffalse
+\begin{itemize}
+    \item \pl{random} library
+    \item \pl{use\_module( library( random ) ).}
+    \item \href{https://www.fi.muni.cz/~hanka/sicstus/doc/html/sicstus/lib_002drandom.html#lib_002drandom}{\texttt{https://www.fi.muni.cz/$\sim$hanka/sicstus/doc/html/sicstus/\\lib\_002drandom.html\#lib\_002drandom}}
+\end{itemize}
+\fi
+
+\section{Graph generator}
+\label{sec:generator}
+
+\subsection{Graph generator settings}
+\label{sec:generator-settings}
+
+Graph generator requires the following parameters to be set:
+\begin{itemize}
+    \item number of vertices, $V > 0$
+    \item minimal and maximal number of edges at any moment in time, 
+        $\pl{Min} \le \pl{Max} \land Max \le \frac{ V(V-1)}{2}$
+    \item probability of edge appearance in given time
+    \item probability of edge removal given time and current edge duration
+    \item time interval in which graph exists
+\end{itemize}
+
+For more information about generator invocation see following section.
+
+\subsection{Graph generator modes}
+\label{sec:generator-modes}
+Settings for graph generator can be set in different 2 modes:
+\begin{itemize}
+\item \textbf{Interactive mode} \\
+This mode is activated when using \pl{graphGenerate/0}. 
+User is prompted for all settings one-by-one. Input values are checked for correct syntax. 
+For an example of interactive graph generation, see \autoref{sec:example-cli}.
+\item \textbf{Batch mode} \\
+This mode is activated when using \pl{graphGenerate/1}. 
+Settings are loaded from external file specified in parameter. 
+The file syntax is checked -- if incorrect, the user is informed and the graph is not generated. 
+For detailed syntax of this file, see \autoref{sec:files-generator}.
+\end{itemize}
+
+Any time generator expects numeric value, any arithmetical expression
+that is arithmetically solvable by Prolog can be used.
+
+If input inconsistency is detected at runtime warning is emitted and generator
+continues with next graph.
+
+\subsection{Graph generation}
+\label{sec:generator-generation}
+
+\begin{algorithmic}[1]
+    \State $Q_A \leftarrow$ queue of all possible edges (without time -- pairs of vertices)
+    \ForAll { minute $T \in \langle BeginTime, EndTime \rangle $ }
+        \ForAll { edge $E \in Graph( T )$ }
+            \State call \pl{removeEdge} with current time $T$ and current duration of $E$
+            \State remove $E$ with $Probability$
+            \If { removed } push to $Q_A$ \EndIf
+        \EndFor
+        \State call \pl{newEdge( T, Probability )}.
+        \State $Q_a \leftarrow \text{empty queue}$
+        \While { not empty $_A$ }
+            \If { $\text{current edge count} == Max$ }
+                \State push all edges from $Q_a$ to $Q_A$
+                \State continue to next minute
+            \EndIf
+            \State $E = pop( Q_A )$
+            \State with $Probability$ add $E$ to graph
+            \If { not added } push add E to $Q_a$ \EndIf
+            \If { $Q_A$ is empty and current edge count${}< Min$ }
+                \While { current edge count < Min }
+                    \State $E = pop( Q_a )$
+                    \State with $Probability$ add $E$ to graph
+                    \If { not added } push $E$ to $Q_a$ \EndIf
+                \EndWhile
+            \EndIf
+        \EndWhile
+        \State $swap( Q_A, Q_a )$ \Comment{ $Q_A$ was empty}
+    \EndFor
+\end{algorithmic}
+
+\section{Example CLI session}
+\label{sec:example-cli}
+\verbatiminput{session.txt}
+
+
+\end{document}
