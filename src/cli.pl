@@ -14,8 +14,8 @@
 :- use_module( graph, [loadGraph/1, printGraph/0] ).
 :- use_module( graphviz, [enableGraphviz/1, disableGraphviz/0] ).
 :- use_module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
-:- use_module( changeList, [ printChangeList/0 ] ).
 :- use_module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
+:- use_module( statsProgress, [ statsProgress/0 ] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -41,7 +41,7 @@ validCommand( graphvizOff, 0, disableGraphviz ).
 validCommand( statsNodes, 0, statsNodes ).
 validCommand( statsEdges, 0, statsEdges ).
 validCommand( statsComponents, 0, statsComponents ).
-validCommand( statsProgress, 0, printChangeList ).
+validCommand( statsProgress, 0, statsProgress ).
 validCommand( statsAnalyseNode, 1, statsAnalyseNode ).
 validCommand( statsMaxComponent, 0, statsMaxComponent ).
 validCommand( help, 0, printHelp ).

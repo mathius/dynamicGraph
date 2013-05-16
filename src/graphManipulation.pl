@@ -8,11 +8,12 @@
 % responsible for exported functions:
 %       Martin Ukrop (graphInMoment/1, edge/2)
 %       Vladimír Štill ( initializeGraph/1, advanceMinute/1, edge/2
-%                      , startOfTime/1, endOfTime/1 )
+%                      , startOfTime/1, endOfTime/1, currentTime/1
+%                      , changesFromNow/1 )
 %
 :- module( graphManipulation, [ graphInMoment/1, edge/2, initializeGraph/1
                               , advanceMinute/1, startOfTime/1, endOfTime/1
-                              , currentTime/1 ] ).
+                              , currentTime/1, advanceMinute/2, changesFromNow/1 ] ).
 
 :- use_module( changeList, [ getChangeList/1 ] ).
 :- use_module( messaging, [ messages/2, outputMessage/2 ] ).
@@ -62,10 +63,18 @@ deleteGraphMoment :-
 * Change graph to next minute which has different graph
 * @NextMinute      Time of graph state after call
 */
-advanceMinute( NextMinute ) :-
+advanceMinute( NextMinute ) :- advanceMinute( NextMinute, _ ).
+
+/* advanceMinute( -NextMinute, -ChangesNow )
+* Change graph to next minute which has different graph
+* @NextMinute      Time of graph state after call
+* @ChangesNow         Changes made to NextMinute
+*/
+advanceMinute( NextMinute, ChangesNow ) :-
       retract( changesTail( Changes ) )
     , !
-    , advanceMinute( Changes, NextMinute ). 
+    , ( Changes = [ minute( _, ChangesNow ) | _ ], ! ; ChangesNow = [] )
+    , advanceMinute2( Changes, NextMinute ). 
 
 /* initializeGraph( -Success )
 * Loads initial configuration of graph
@@ -102,9 +111,16 @@ endOfTime( EndTime ) :- endOfTimePrivate( EndTime ).
 */
 currentTime( CurrentTime ) :- currentTimePrivate( CurrentTime ).
 
+/* changesFromNow( -Changes )
+* gets list of changes from current moment
+* @Changes    changes from current moment
+*/
+changesFromNow( Changes ) :- changesTail( Changes ).
+
 :- dynamic startOfTimePrivate/1.
 :- dynamic endOfTimePrivate/1.
 :- dynamic currentTimePrivate/1.
+:- dynamic changesTail/1.
 
 retractGraph :-
       retractall( changeList( _, _, _ ) )
@@ -137,10 +153,10 @@ makeMinute( [ deleteEdge( X, Y ) | XS ] ) :-
     , !
     , makeMinute( XS ).
 
-% advanceMinute( +Changes, -Minute )
-% no end case -- advanceMinute( [], EndOfTime ) -- as last minute
+% advanceMinute2( +Changes, -Minute )
+% no end case -- advanceMinute2( [], EndOfTime ) -- as last minute
 % is generated when list is singleton
-advanceMinute( [ minute( Minute, NowChanges ) | NextChanges ], Minute ) :-
+advanceMinute2( [ minute( Minute, NowChanges ) | NextChanges ], Minute ) :-
       retractall( currentTimePrivate( _ ) )
     , assertz( currentTimePrivate( Minute ) )
     , !

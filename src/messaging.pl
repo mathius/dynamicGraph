@@ -223,3 +223,10 @@ messages( expectedDuration,
 messages( graphvizEnabled, [ 'Graphviz output enabled to directory ' ] ).
 messages( graphvizDisabled, [ 'Graphviz output disabled.' ] ).
 messages( graphvizWritten, [ 'Graphviz file writtern to ' ] ).
+
+messages( warnBigOutput, [ 'This command will generate more than 10 files'
+                         , 'Do you want to write those files (y) or disable file output temporarily?'
+                         ] ).
+messages( addedEdge, [ 'Edge added: ' ] ).
+messages( deletedEdge, [ 'Edge deleted: ' ] ).
+messages( changesMinute, [ 'Changes in minute: ' ] ).
