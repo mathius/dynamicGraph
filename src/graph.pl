@@ -54,11 +54,18 @@ loadGraph( File ) :-
         retractGraph,
         seeing( OldInputStream ),
         seen,
-        (openFileForReading( File ) -> readTerms( Status0 ) ; Status0 = error),
-        ( Status0 \= error -> initializeGraph( Status ) ; Status = Status0 ),
+        ( openFileForReading( File ) -> readTerms( Status0 ) ; Status0 = error ),
+        (       graphName(_), Status1 = Status0 
+                ; 
+                messages( graphNoName, [Message] ),
+                outputMessage( error, [Message] ),
+                Status1 = error 
+        ),
+        ( Status1 == success -> initializeGraph( Status ) ; Status = Status1 ),
         printResultMessage( Status ),
         seen,
-        see( OldInputStream ).
+        see( OldInputStream ),
+        !.      % to supress backtracking into graph loading
 
 /* readTerms( -Status )
 reads term from input stream in a cycle

@@ -34,6 +34,7 @@ validCommand( timeEnd, 0, printTimeInterval ).
 validCommand( timeEnd, 1, setEndTime ).
 validCommand( timeInterval, 0, printTimeInterval ).
 validCommand( timeInterval, 2, setTimeInterval ).
+validCommand( timeMoment, 1, setTimeMoment ).
 validCommand( time, 0, printTimeInterval ).
 validCommand( graphviz, 1, enableGraphviz ).
 validCommand( graphvizOff, 0, disableGraphviz ).
@@ -52,6 +53,7 @@ validCommand( g, Arity, Command ) :- validCommand( graph, Arity, Command ).
 validCommand( tb, Arity, Command ) :- validCommand( timeBegin, Arity, Command ).
 validCommand( te, Arity, Command ) :- validCommand( timeEnd, Arity, Command ).
 validCommand( ti, Arity, Command ) :- validCommand( timeInterval, Arity, Command ).
+validCommand( tm, Arity, Command ) :- validCommand( timeMoment, Arity, Command ).
 validCommand( t, Arity, Command ) :- validCommand( time, Arity, Command ).
 validCommand( gv, Arity, Command ) :- validCommand( graphviz, Arity, Command ).
 validCommand( gvo, Arity, Command ) :- validCommand( graphvizOff, Arity, Command ).
@@ -144,7 +146,11 @@ setEndTime( TimeFunctor ) :-
         timeConversion( Time, TimeFunctor ),
         timeInterval( _, Time ).
 % sets both begin and end time of time interval
-setEndTime( TimeBeginFunctor, TimeBeginFunctor ) :-
+setTimeInterval( TimeBeginFunctor, TimeEndFunctor ) :-
         timeConversion( TimeBegin, TimeBeginFunctor ),
-        timeConversion( TimeEnd, TimeBeginFunctor ),
+        timeConversion( TimeEnd, TimeEndFunctor ),
         timeInterval( TimeBegin, TimeEnd ).
+% set both begin and end time on the same value
+setTimeMoment( TimeFunctor ) :-
+        timeConversion( Time, TimeFunctor ),
+        timeInterval( Time, Time ).

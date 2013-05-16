@@ -164,7 +164,6 @@ messages( compNodes, % used for printing component statistics
 messages( compTime, % used for printing component statistics
           ['Time: ']
         ).
-                
 messages( graphLoadSuccess, % graph was successfully loaded
           ['Successfully loaded: ']
         ).
@@ -179,6 +178,9 @@ messages( noGraph,
         ).
 messages( dupliciteGraphName,
           ['Graph name is defined multiple times.','Old graph name: ','Colliding name: ']
+        ).
+messages( graphNoName,
+          ['No name was specified for the graph.']
         ).
 messages( invalidGraphTerm,
           ['Invalid term in graph file: ']

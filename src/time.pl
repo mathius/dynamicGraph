@@ -86,8 +86,7 @@ setTimeIntervalBegin( Time ) :- % get time
         !,
         timeIntervalBegin( Time ).
 setTimeIntervalBegin( Time ) :- % set time
-        ( retract( timeIntervalBegin( _ ) ) ; true), % retract old time if applicable, succeed if not
-        !, % extremely importat, otherwise we might backtrack through retract
+        retractall( timeIntervalBegin( _ ) ), % retract old time if applicable, succeed if not
         assertz( timeIntervalBegin( Time ) ),
         messages( timeBeginChange, [Message] ),
         timeToAtom( Time, TimeHumanReadable ),
@@ -104,8 +103,7 @@ setTimeIntervalEnd( Time ) :- % get time
         !,
         timeIntervalEnd( Time ).
 setTimeIntervalEnd( Time ) :- % set time
-        ( retract( timeIntervalEnd( _ ) ) ; true), % retract old time if applicable, succeed if not
-        !, % extremely importat, otherwise we might backtrack through retract
+        retractall( timeIntervalEnd( _ ) ), % retract old time if applicable, succeed if not
         assertz( timeIntervalEnd( Time ) ),
         messages( timeEndChange, [Message] ),
         timeToAtom( Time, TimeHumanReadable ),
