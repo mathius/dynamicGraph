@@ -11,7 +11,8 @@
 %                      , startOfTime/1, endOfTime/1 )
 %
 :- module( graphManipulation, [ graphInMoment/1, edge/2, initializeGraph/1
-                              , advanceMinute/1, startOfTime/1, endOfTime/1 ] ).
+                              , advanceMinute/1, startOfTime/1, endOfTime/1
+                              , currentTime/1 ] ).
 
 :- use_module( changeList, [ getChangeList/1 ] ).
 :- use_module( messaging, [ messages/2, outputMessage/2 ] ).
@@ -64,10 +65,7 @@ deleteGraphMoment :-
 advanceMinute( NextMinute ) :-
       retract( changesTail( Changes ) )
     , !
-    ,  advanceMinute( Changes, NextMinute ). 
-      %  ;
-      %  assertz( changesTail( Changes ) ), fail
-      %).
+    , advanceMinute( Changes, NextMinute ). 
 
 /* initializeGraph( -Success )
 * Loads initial configuration of graph
@@ -98,14 +96,21 @@ startOfTime( StartTime ) :- startOfTimePrivate( StartTime ).
 */
 endOfTime( EndTime ) :- endOfTimePrivate( EndTime ).
 
+/* currentTime( -CurrentTime )
+* time of graph as now in edge/2
+* @CurrentTime
+*/
+currentTime( CurrentTime ) :- currentTimePrivate( CurrentTime ).
+
 :- dynamic startOfTimePrivate/1.
 :- dynamic endOfTimePrivate/1.
+:- dynamic currentTimePrivate/1.
 
 retractGraph :-
       retractall( changeList( _, _, _ ) )
     , retractall( startOfTimePrivate( _ ) )
     , retractall( endOfTimePrivate( _ ) )
-    , retractall( currentTime( _ ) )
+    , retractall( currentTimePrivate( _ ) )
     , retractall( changesTail( _ ) )
     , retractall( edgePrivate( _, _ ) )
     , !.
@@ -116,7 +121,7 @@ makeInitialGraph( changeList( StartOfTime, EndOfTime, Changes ) ) :-
     , assertz( endOfTimePrivate( EndOfTime ) )
     , !
     , Changes = [ minute( InitialTime, NowChanges ) | NextChanges ]
-    , assertz( currentTime( InitialTime ) )
+    , assertz( currentTimePrivate( InitialTime ) )
     , assertz( changesTail( NextChanges ) )
     , !
     , makeMinute( NowChanges ).
@@ -136,8 +141,8 @@ makeMinute( [ deleteEdge( X, Y ) | XS ] ) :-
 % no end case -- advanceMinute( [], EndOfTime ) -- as last minute
 % is generated when list is singleton
 advanceMinute( [ minute( Minute, NowChanges ) | NextChanges ], Minute ) :-
-      retractall( currentTime( _ ) )
-    , assertz( currentTime( Minute ) )
+      retractall( currentTimePrivate( _ ) )
+    , assertz( currentTimePrivate( Minute ) )
     , !
     , retractall( changesTail( _ ) )
     , assertz( changesTail( NextChanges ) )
@@ -147,13 +152,13 @@ advanceMinute( [ minute( Minute, NowChanges ) | NextChanges ], Minute ) :-
 % setupMoment( Moment )
 % fast-forward/backward 
 setupMoment( Moment ) :-
-      retract( currentTime( CTime ) )
+      retract( currentTimePrivate( CTime ) )
     ,
     ( Moment < CTime, !, resetChanges
     ; true
     )
     , fastForwardChanges( Moment )
-    , assertz( currentTime(Moment) ).
+    , assertz( currentTimePrivate(Moment) ).
     
 resetChanges :-
       retractall( changesTail( _ ) )
@@ -166,7 +171,6 @@ fastForwardChanges( Moment ) :-
     , assertz( changesTail( ForwardChanges ) ).
 
 fastForwardChanges( _, [], [] ) :- !.
-%  fastForwardChanges( Moment, [ minute( Moment, _ ) | NextChanges ], NextChanges ) :- !.
 fastForwardChanges( Moment, [ minute( Time, Ch ) | NextChanges ],  
                             [ minute( Time, Ch ) | NextChanges ] ) :- Time > Moment, !.
 fastForwardChanges( Moment, [ _ | NextChanges ], ForwardChanges ) :-
