@@ -11,7 +11,7 @@
 
 
 :- use_module( graph, [edge/4] ).
-:- use_module( graphManipulation, [graphInMoment/1, edge/2, initialize/1, advanceMinute/1] ).
+:- use_module( graphManipulation, [edge/2] ).
 :- use_module(library(lists)).
 
 
