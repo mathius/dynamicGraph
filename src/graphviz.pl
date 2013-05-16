@@ -2,19 +2,20 @@
 %
 % Description to be added.
 %
-% date: 2013-05-14
+% date: 2013-05-16
 % authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1
 %                         , plotGraph/3, graphvizEnabled/0 )
+%          Andrej Krejcir ( graphvizFilename/2 )
 %
 :- module( graphviz, [ enableGraphviz/1, disableGraphviz/0, plotGraph/1
-                     , plotGraph/3, graphvizEnabled/0 ] ).
+                     , plotGraph/3, graphvizEnabled/0, graphvizFilename/2 ] ).
 
 :- use_module( library( lists ) ).
 :- use_module( graphManipulation, [edge/2] ).
-:- use_module( utilities, [ makePath/3, concatenateAtoms/2 ] ).
+:- use_module( utilities, [ makePath/3, concatenateAtoms/2, numberToAtom/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ).
-
-
+:- use_module( graph, [ graphName/1 ] ).
+:- use_module( time, [ timeConversion/2 ] ).
 
 :- dynamic graphvizDirectory/1.
 
@@ -101,3 +102,18 @@ writeHighlight( Color, [ H | HS ] ) :-
     , write( '];' )
     , nl
     , writeHighlight( Color, HS ).
+    
+graphvizFilename(Time, Filename):-
+    graphName(GName),
+    timeConversion( Time, Year-Month-Day+Hour:Minute),
+    numberToAtom( Year, YearA ),
+    numberToAtom( Month, MonthA ),
+    numberToAtom( Day, DayA ),
+    numberToAtom( Hour, HourA ),
+    numberToAtom( Minute, MinuteA ),
+    concatenateAtoms( [YearA,'-',MonthA,'-',DayA,'_',HourA,'-',MinuteA], TimeA ),
+    concatenateAtoms([GName,'_', TimeA,'.dot'], Filename).
+    
+    
+        
+        
