@@ -55,6 +55,12 @@ non-existent files are handled gracefully, originaly opened input stream is kept
 */
 openFileForReading( File ) :-
         seeing( OldInputStream ),
+        ( atomic( File ) -> true 
+                ;
+                messages( filenameNotAtomic, [Message] ),
+                outputMessage( error, [Message] ),
+                fail
+        ), 
         on_exception( error(existence_error(_,_),existence_error(_,_,_,_,_)),
                       see( File ), 
                       (         messages( fileNotOpen, [Message] ),

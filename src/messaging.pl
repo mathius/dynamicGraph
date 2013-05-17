@@ -193,6 +193,9 @@ messages( invalidGraphTerm,
 messages( fileNotOpen,
           ['Could not open file ']
         ).
+messages( filenameNotAtomic,
+          ['Provided filename is not atomic.']
+        ).
 messages( nonAtomicGraphName,
           ['The graph name is not atomic.']
         ).
