@@ -3,7 +3,7 @@
 %
 % date: 2013-05-16
 % responsible for exported functions:
-%       Vladimír Štill ( statsProgress/0 )
+%       Vladimir Still ( statsProgress/0 )
 
 :- module( statsProgress, [ statsProgress/0 ] ).
 
@@ -46,7 +46,7 @@ notifyGraphviz( Changes, Out ) :-
     ).
 notifyGraphviz( _, n ). % gv not enabled
 
-stats( [], _, _ ).
+stats( _, _ ).
 stats( Out, End ) :-
       advanceMinute( Min, Changes )
     , 
@@ -57,8 +57,6 @@ stats( Out, End ) :-
       , stats( Out, End )
     ; true
     ).
-
-
 
 plot( n, _ ).
 plot( y, Min ) :-

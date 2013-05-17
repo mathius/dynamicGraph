@@ -121,6 +121,7 @@ changesFromNow( Changes ) :- changesTail( Changes ).
 :- dynamic endOfTimePrivate/1.
 :- dynamic currentTimePrivate/1.
 :- dynamic changesTail/1.
+:- dynamic changeList/3.
 
 retractGraph :-
       retractall( changeList( _, _, _ ) )
