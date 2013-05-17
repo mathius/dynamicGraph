@@ -71,9 +71,9 @@ loadGraph( File ) :-
 set time interval from creation of the first edge to removal of the last edge
 */
 setTimeIntervalAccorgingToGraph :-
-        startOfTime( firstNodeTime ),
-        endOfTime( lastNodeTime ),
-        timeInterval( firstNodeTime, lastNodeTime ).
+        startOfTime( FirstNodeTime ),
+        endOfTime( LastNodeTime ),
+        timeInterval( FirstNodeTime, LastNodeTime ).
 
 /* readTerms( -Status )
 reads term from input stream in a cycle

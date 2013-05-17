@@ -102,10 +102,12 @@ Dynamic Graph is a program to analyze graphs with dynamic edges that appear or d
 
 \section{User interface}
 
-DynamicGraph provides interactive command line interface. After running the compiled binary (or calling the
-top level predicate \pl{dynamicGraph/0}), basic program info is displayed followed by the internal command prompt (\pl{|: }).
- All the commands are using Prolog predicate syntax - i. e. they must always end with a dot character (\pl{.}) 
- with optional parameters in parentheses before it. Commands are divided into several categories.
+DynamicGraph provides interactive command line interface. To start the program, consult file \pl{main.pl} and
+call the top level predicate \pl{dynamicGraph/0}).
+After start, basic program info is displayed followed by the internal command prompt (\pl{|: }).
+All the commands are using Prolog predicate syntax - i. e. they must always end with a dot character (\pl{.}) 
+with optional parameters in parentheses before it. Commands are divided into several categories.
+All commands provide feedback on performed actions, with either info prefix (\pl{# }) or error prefix (\pl{! }).
 
 The interactive interface holds several global settings that can be altered by specific commands. 
 These settings include currently loaded graph, boundaries of the time interval and status of the \gv{} support. 
@@ -114,20 +116,23 @@ Settings are stored as facts dynamically added to program database.
 \subsection{Graph manipulating commands}
 \begin{itemize}
 \item \pl{graphLoad/1}, \pl{gl/1} \\
-Load graph from specified file. Syntax of the file contents is checked, if it is not correct, file is not loaded.
-
-\item \pl{graphGenerate/1}, \pl{gg/1} \\
-Generate new graph according to settings in specified file. 
-Syntax of the configuration file is checked, if incorrect, the graph is not generated. 
-After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
+Load graph from specified file. Filename is checked to be atomic and to point to existing file.
+Syntax of the file contents is checked, if it is not a syntactically correct graph, file is not loaded.
+The loaded graph is processed and validated, time interval is set from the creation of the first edge
+to the removal of the last
 
 \item \pl{graphGenerate/0}, \pl{gg/0} \\
 Generate new graph, parameters are set interactively. 
 Syntax  of the values from user are checked, if incorrect, the graph is not generated. 
 After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
 
+\item \pl{graphGenerate/1}, \pl{gg/1} \\
+Generate new graph according to settings in specified file. 
+Syntax of the configuration file is checked, if incorrect, the graph is not generated. 
+After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
+
 \item \pl{graph/0}, \pl{g/0} \\
-Display info about currently loaded graph - name, number of nodes and number of edges.
+Display currently loaded graph - name and all edges.
 \end{itemize}
 
 \subsection{Time commands}
