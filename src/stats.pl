@@ -11,11 +11,10 @@
 
 :- use_module( messaging, [outputMessage/2, messages/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2] ).
-:- use_module( time, [timeConversion/2, timeInterval/2, timeToAtom/2] ).
-:- use_module( graph, [graphName/1 ,edge/4] ).
-:- use_module( graphComponent, [component/2, computeComponents/0, getComponentList/1]).
-:- use_module( graphManipulation, [graphInMoment/1, edge/2, 
-                advanceMinute/1, startOfTime/1, endOfTime/1] ).
+:- use_module( time, [timeInterval/2, timeToAtom/2] ).
+:- use_module( graph, [edge/4] ).
+:- use_module( graphComponent, [computeComponents/0, getComponentList/1]).
+:- use_module( graphManipulation, [graphInMoment/1, advanceMinute/1] ).
 :- use_module( graphviz, [plotGraph/1, plotGraph/3, graphvizFilename/2]).
 :- use_module(library(lists)).
                                                
