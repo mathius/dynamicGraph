@@ -24,20 +24,15 @@
 */
 :- dynamic component/2.
 
-/* computeComponent/0
-    Computes components for graph with all edges
-*/
-computeComponents:- computeComponents(getNeighbour).
-               
 /* computeComponent/1
     computeComponent(NeighbourPred)    Computes component for graph with specified edges
     
     @param NeighbourPred(Name, NextName)
         Preditate to get neighbour of a Node; usable to get only certain edegs                                    
 */
-computeComponents(NeighbourPred):-
+computeComponents:-
     clearComponents,
-    (labelComponents(NeighbourPred) ; true).
+    (labelComponents ; true).
      
                                                                                             
 clearComponents:- 
@@ -45,10 +40,10 @@ clearComponents:-
     ;
     true. 
     
-labelComponents(NeighbourPred):-
+labelComponents:-
     getUnlabeledNode(NodeName),
     labelNode(NodeName,NodeName),
-    propagateLabel(NeighbourPred , NodeName, NodeName),
+    propagateLabel( NodeName, NodeName),
     fail.
 
 
@@ -62,11 +57,12 @@ getUnlabeledNode(Name):-
 labelNode(NodeName, Label):-
     assertz(component(NodeName, Label)).
     
-propagateLabel(NeighbourPred, NodeName, Label):-
-    call(NeighbourPred, NodeName, Neighbour),
+propagateLabel(NodeName, Label):-
+    %%%  call(NeighbourPred, NodeName, Neighbour),
+    getNeighbour(NodeName, Neighbour),
     notLabeled(Neighbour),
     labelNode(Neighbour, Label),
-    propagateLabel(NeighbourPred,Neighbour, Label),
+    propagateLabel(Neighbour, Label),
     fail.
 
 getNeighbour(Name, Out):- edge(Name, Out).
