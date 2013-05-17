@@ -13,10 +13,10 @@
 %
 :- module( graph, [graphName/1, edge/4, loadGraph/1, printGraph/0] ).
 
-:- use_module( time, [timeConversion/2, timeToAtom/2] ).
+:- use_module( time, [timeConversion/2, timeToAtom/2, timeInterval/2] ).
 :- use_module( utilities, [concatenateAtoms/2, numberToAtom/2, openFileForReading/1] ).
 :- use_module( messaging, [messages/2, outputMessage/2] ).
-:- use_module( graphManipulation, [ initializeGraph/1 ] ).
+:- use_module( graphManipulation, [ initializeGraph/1, startOfTime/1, endOfTime/1 ] ).
 
 /* edgePrivate( +-Source, +-Destination, -EndTime, -EndTime)
 private predicate for edge info (to prevent functions from altering the loaded graph)
@@ -64,7 +64,16 @@ loadGraph( File ) :-
         printResultMessage( Status ),
         seen,
         see( OldInputStream ),
+        setTimeIntervalAccorgingToGraph,
         !.      % to supress backtracking into graph loading
+
+/* setTimeIntervalAccorgingToGraph/0
+set time interval from creation of the first edge to removal of the last edge
+*/
+setTimeIntervalAccorgingToGraph :-
+        startOfTime( firstNodeTime ),
+        endOfTime( lastNodeTime ),
+        timeInterval( firstNodeTime, lastNodeTime ).
 
 /* readTerms( -Status )
 reads term from input stream in a cycle
