@@ -245,7 +245,7 @@ Commands are validated using \pl{validCommand/3} predicate -- in case of existin
 internal predicate callback is unified back. Thus, internal names are independent from the names used by user.
 
 Messages output back to user are differentiated into 3 types: info messages (\pl{\# }), error messages (\pl{! }) and 
-messages asking for further information (\pl{? }). All lined are prefixed automatically by messages types.
+messages asking for further information (\pl{? }). Lines are automatically prefixed based on messages types.
 All messages are saved in dedicated \pl{messaging} module,
 enabling extra-easy translation of the program or mistake correction.
 
