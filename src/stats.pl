@@ -1,4 +1,9 @@
-% DynamicGraph, stats module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% stats module
 %
 % This module contains predicates for printing statistics
 % 
@@ -21,21 +26,21 @@
 
 % utility
 
-filter(_Pred, [], []).
-filter(Pred, [X|Rest], [X|Out]):-
+filter([] ,_Pred, []).
+filter([X|Rest], Pred, [X|Out]):-
     call(Pred,X),!,
-    filter(Pred,Rest,Out).
-filter(Pred, [_|Rest], Out) :- filter(Pred, Rest, Out).
+    filter(Rest,Pred,Out).
+filter([_|Rest], Pred ,Out) :- filter(Rest, Pred, Out).
 
-all(_Pred, []).
-all(Pred, [H|Rest]):-
+all([] ,_Pred).
+all([H|Rest], Pred):-
     call(Pred,H),!,
-    all(Pred, Rest).
+    all(Rest, Pred).
 
-map(_Pred, [], []).
-map(Pred, [X|Rest], [Y|Out]):-
+map([] ,_Pred, []).
+map([X|Rest], Pred,[Y|Out]):-
     call(Pred,X,Y),!,
-    map(Pred, Rest, Out).
+    map(Rest, Pred, Out).
 
 listMax(Pred, [X|Rest], Out) :- listMax(Pred, Rest, X, Out).
 listMax(_Pred, [], Out, Out).
@@ -196,8 +201,8 @@ otherNode(Name, ed(X,Name,B,E), neighbour(X,B,E)).
 
 getNeighbours(Name, Out):-
     findall(ed(X,Y,B,E), edge(X,Y,B,E), Edges),
-    filter(connects(Name), Edges, NextEdges),
-    map(otherNode(Name), NextEdges, Out).
+    filter(Edges, connects(Name), NextEdges),
+    map(NextEdges, otherNode(Name), Out).
     
 printNeighbours([]).
 printNeighbours([neighbour(Name,B,E)|Rest]):-
@@ -221,7 +226,7 @@ statsComponents:-
     graphInMoment(Begin),
     computeComponents,
     getComponentList(CompList),
-    all(printComponent, CompList),
+    all(CompList, printComponent),
     graphvizFilename(Begin, Filename),
     plotGraph(Filename).
     
@@ -298,7 +303,7 @@ printComponent( comp(Label, NodeList) ):-
     numberToAtom(Len,LenA),
     concatenateAtoms([CompLabelMsg, Label], Msg1),
     concatenateAtoms([CompSizeMsg, LenA], Msg2),
-    map(addSeparator(' '), NodeList, MsgList),
+    map(NodeList, addSeparator(' '), MsgList),
     concatenateAtoms(MsgList, MsgNodes),
     concatenateAtoms([CompNodesMsg, MsgNodes], Msg3),
     outputMessage(info, [Msg1]),

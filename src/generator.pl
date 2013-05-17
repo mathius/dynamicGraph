@@ -1,4 +1,9 @@
-% DynamicGraph, generator module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% generator module
 %
 % Generates random graph, eiter interactivelly or from given description.
 % Description must be valid prolog file with predicates described in report.

@@ -1,4 +1,9 @@
-% DynamicGraph, texts module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% texts module
 %
 % This module groups all user texts used in DynamicGraph.
 % 
@@ -187,6 +192,9 @@ messages( invalidGraphTerm,
         ).
 messages( fileNotOpen,
           ['Could not open file ']
+        ).
+messages( filenameNotAtomic,
+          ['Provided filename is not atomic.']
         ).
 messages( nonAtomicGraphName,
           ['The graph name is not atomic.']

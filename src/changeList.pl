@@ -1,13 +1,18 @@
-% DynamicGraph, chageList module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% chageList module
 %
 % Exports single predicate getChangeList which generates list of changes
 % (of graph in database)
 %
 % date: 2013-05-14
 % responsible for exported functions:
-%       Vladimir Still ( getChangeList/1, printChangeList/0 )
+%       Vladimir Still ( getChangeList/1 )
 %
-:- module( changeList, [ getChangeList/1, printChangeList/0 ] ).
+:- module( changeList, [ getChangeList/1] ).
 
 :- use_module( library( lists ) ).
 :- use_module( graph, [ edge/4 ] ).
