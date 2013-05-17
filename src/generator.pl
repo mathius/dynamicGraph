@@ -12,7 +12,8 @@
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3, numberToAtom/2 ] ).
+:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3, numberToAtom/2
+                          , openFileForReading/1 ] ).
 :- use_module( time, [ timeConversion/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
@@ -120,7 +121,7 @@ ask( Q ) :- messages( Q, M ), outputMessage( question, M ).
 */
 graphGenerate( File ) :-
       seeing( OldFile )
-    , see( File )
+    , openFileForReading( File )
     , loadGeneratorPreds( Preds )
     , seen
     , see( OldFile )
