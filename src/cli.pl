@@ -21,6 +21,7 @@
 :- use_module( stats, [statsNodes/0, statsEdges/0, statsAnalyseNode/1] ).
 :- use_module( generator, [ graphGenerate/1, graphGenerate/0 ] ).
 :- use_module( statsProgress, [ statsProgress/0 ] ).
+:- use_module( graphManipulation, [ startOfTime/1, endOfTime/1 ] ).
 
 /* validCommand( +Functor, +Arity, -Command )
 list of valid user commands and their mapping to internal predicates
@@ -33,11 +34,11 @@ validCommand( graphLoad, 1, loadGraph ).
 validCommand( graphGenerate, 0, graphGenerate ).
 validCommand( graphGenerate, 1, graphGenerate ).
 validCommand( graph, 0, printGraph ).
-validCommand( timeBegin, 0, printTimeInterval ).
+validCommand( timeBegin, 0, setStartEdgeTime ).
 validCommand( timeBegin, 1, setBeginTime ).
-validCommand( timeEnd, 0, printTimeInterval ).
+validCommand( timeEnd, 0, setEndEdgeTime ).
 validCommand( timeEnd, 1, setEndTime ).
-validCommand( timeInterval, 0, printTimeInterval ).
+validCommand( timeInterval, 0, setStartEndEdgeTime ).
 validCommand( timeInterval, 2, setTimeInterval ).
 validCommand( timeMoment, 1, setTimeMoment ).
 validCommand( time, 0, printTimeInterval ).
@@ -159,3 +160,24 @@ setTimeInterval( TimeBeginFunctor, TimeEndFunctor ) :-
 setTimeMoment( TimeFunctor ) :-
         timeConversion( Time, TimeFunctor ),
         timeInterval( Time, Time ).
+% set begin of time interval when first edge is created
+setStartEdgeTime :-
+        startOfTime( FirstEdgeTime ),
+        !,
+        timeInterval( FirstEdgeTime, _ ).
+setStartEdgeTime :-
+        messages( noGraph, Messages ),
+        outputMessage( error, Messages ).
+% set end of time interval when last edge is removed
+setEndEdgeTime :-
+        endOfTime( LastEdgeTime ),
+        !,
+        timeInterval( _, LastEdgeTime ).
+setEndEdgeTime :- 
+        messages( noGraph, Messages ),
+        outputMessage( error, Messages ).
+% set begin of time interval when first edge is created
+% and end of time interval when last edge is removed
+setStartEndEdgeTime :-
+        setStartEdgeTime,
+        setEndEdgeTime.
