@@ -411,7 +411,14 @@ It fails if no more changes are in the list.
 \subsection{Finding connected components}
 \label{sec:computing-components}
 
-The components are stored as predicate \pl{component(Node,Label)}, which gives each node a label of the component. To label connected nodes DFS is used. It is implemented using backtracking. For a given node, the predicate \pl{edge/2} is used to get its neighbours one at a time and call the propagation recursively. To get all components, the DFS is run for each unlabelled node. 
+The components are stored as predicate \pl{component(Node,Label)},
+which gives each node a label of the component. 
+To label connected nodes DFS is used. 
+It is implemented using backtracking. 
+For a given node, the predicate \pl{edge/2} is used 
+to get its neighbours one at a time and call the propagation 
+recursively.
+To get all components, the DFS is run for each unlabelled node. 
  
 \subsection{Random numbers}
 \label{sec:computing-random}

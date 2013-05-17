@@ -39,10 +39,6 @@ computeComponents(NeighbourPred):-
     clearComponents,
     (labelComponents(NeighbourPred) ; true).
      
-     
-
-     
-     
                                                                                             
 clearComponents:- 
     retract( component(_,_)) , fail
@@ -98,9 +94,9 @@ processCompList([component(Node,Label)|Rest], Accum, Out):-
     processCompList(Rest, Accum2, Out).
 
 updateCompAccum([], Node, Label, [comp(Label, [Node])]).
-updateCompAccum([ comp(Label, List)|_Rest], 
+updateCompAccum([ comp(Label, List)|Rest], 
                 Node, Label,
-                [ comp(Label, [Node|List])|_Rest]).
+                [ comp(Label, [Node|List])|Rest]).
                 
-updateCompAccum([ X|Rest], Node, Label, [ X|Out]):-
+updateCompAccum([ X| Rest], Node, Label, [ X|Out]):-
     updateCompAccum(Rest, Node, Label, Out).                
