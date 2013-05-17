@@ -128,7 +128,6 @@ After generation, graph is automatically saved to file \pl{<graphname>.pl} to cu
 
 \item \pl{graphGenerate/1}, \pl{gg/1} \\
 Generate new graph according to settings in specified file. 
-Syntax of the configuration file is checked, if incorrect, the graph is not generated. 
 After generation, graph is automatically saved to file \pl{<graphname>.pl} to current folder.
 
 \item \pl{graph/0}, \pl{g/0} \\
@@ -386,8 +385,11 @@ The loaded graph is saved to program database.
 As a result, there can only be one graph loaded at a time. 
 Before a new graph is loaded the old one is deleted form database.
 
-Edges are inserted into program database as facts \pl{edge(From,To,Start,End).}
-
+Edges are inserted into program database as facts
+\pl{edgePrivate(From,To,Start,Duration).}
+and they are accessible by \pl{edge(From,To,Start,Duration)} which is
+exported from module graph. This allows separation of graph loading
+from other modules ant prevents tampering with dynamic predicates.
 
 
 %Nodes can be represented as this predicate:
@@ -414,18 +416,29 @@ It is saved in the program database.
 A time slice of the graph is needed to compute statistics at a single moment. 
 The slice is defined by the predicate \pl{edge(X,Y)}, which defines edges at the current moment. 
 
-The implementation is in the module \pl{graphManipulation}, which exports predicates:
+It is implemented is in the module \pl{graphManipulation}, which exports several
+predicates, most importantly:
 \begin{itemize}
-\item graphInMoment(+Time) - takes a time, modifies predicates
+\item \pl{graphInMoment(+Time)} -- takes a time, modifies predicates
 	\pl{edge/2} in the database to represent the edges at the specified 
 	moment and updates the event list to contain only future changes.
 	
-\item advanceMinute(-Time) - this predicate uses the event list data
+\item \pl{advanceMinute(-Time)} -- this predicate uses the event list data
 	 structure. It takes the next element in the list, updates the
 	 \pl{edge/2} according to it and unifies \pl{Time} with the time of
 	 the change.
 It fails if no more changes are in the list.
+\item \pl{edge( -X, -Y )} -- edges of graph in current time.
 \end{itemize} 
+
+This module also holds time information about whole graph, and current moment.
+
+When initialized it creates changesList and saves it to database. Tail of
+changes list from next changing minute is also saved in database.
+
+All dynamic predicates that need to be accessed from outside are wrapped
+into static predicates that are calling them to disallow tampering with
+dynamic predicates.
  
 \subsection{Finding connected components}
 \label{sec:computing-components}
