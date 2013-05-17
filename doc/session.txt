@@ -80,3 +80,39 @@
 # Generating graph...
 # Writing to file: testGraph.pl...
 # Finished.
+|: statsEdges.
+# Number of edges in graph: 13
+# Edge with longest time interval:
+# Edge from: n1 to n6
+# Start time: 2013-5-14 20:30
+# End time:   2013-5-14 22:30
+# Interval: 120 min
+# 
+# Edge with shortest time interval:
+# Edge from: n1 to n2
+# Start time: 2013-5-14 20:0
+# End time:   2013-5-14 21:0
+# Interval: 60 min
+|: statsNodes.
+# Number of nodes in graph: 11
+# 
+# Node with maximum degree is: 
+# Name: n4
+# Degree: 4
+# 
+# Node with minimum degree is: 
+# Name: n2
+# Degree: 1
+|: statsComponents.
+# Label: n1
+# Size: 2
+# Nodes: n2 n1 
+# 
+# Label: n3
+# Size: 9
+# Nodes: n6 n7 n11 n10 n9 n8 n5 n4 n3
+|: statsMaxComponent. 
+# Time: 2013-5-14 20:30
+# Label: n1
+# Size: 11
+# Nodes: n3 n10 n9 n8 n5 n4 n11 n7 n6 n2 n1 
