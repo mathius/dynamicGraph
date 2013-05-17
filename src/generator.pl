@@ -1,6 +1,7 @@
 % DynamicGraph, generator module
 %
-% Description to be added.
+% Generates random graph, eiter interactivelly or from given description.
+% Description must be valid prolog file with predicates described in report.
 %
 % date: 2013-05-14
 % responsible for exported functions:
@@ -15,6 +16,9 @@
 :- use_module( time, [ timeConversion/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
+/* graphGenerate
+* iteractive graph generation
+*/
 graphGenerate :-
       getName
     , getNodes
@@ -101,9 +105,7 @@ unloadUser :-
     , retractall( removeEdge( _, _, _ ) )
     , retractall( duration( _, _ ) ).
 
-% TODO
 isDuration( F, T ) :- timeConversion( FF, F ), timeConversion( TT, T ), FF < TT.
-    
 
 invalidInput( E ) :-
       messages( invalidInput, [ II ] )
@@ -112,6 +114,10 @@ invalidInput( E ) :-
 
 ask( Q ) :- messages( Q, M ), outputMessage( question, M ).
 
+/* graphGenerate( +File )
+* generates graph from given description
+* @File     description file to be used for generation
+*/
 graphGenerate( File ) :-
       seeing( OldFile )
     , see( File )

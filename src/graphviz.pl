@@ -1,6 +1,9 @@
 % DynamicGraph, graphviz module
 %
-% Description to be added.
+% everithing necessary for graphviz export
+% - enabling and disabling export
+% - plot graphs in moment
+% - plot graph hinghlighting ceratin vertices
 %
 % date: 2013-05-16
 % authors: Vladimir Still ( enableGraphviz/1, disableGraphviz/0, plotGraph/1
@@ -46,7 +49,8 @@ disableGraphviz :-
 disableGraphvizInt :- retractall( graphvizDirectory( _ ) ).
 
 /* plotGraph( +OutputFile, +Edges )
-saves plot of graph given by edges currently in database
+* if graphviz is enabled, saves plot of graph given by edges currently in database
+* to graphviz directory
 @param +OutputFile     file to save plot to, must be ground
 */
 plotGraph( OutputFile ) :- plotGraph( OutputFile, [], 'none' ).
@@ -94,6 +98,7 @@ writeEdges :-
     ; true
     ).
 
+% writeHighlight( +Color, +Highlighted )
 writeHighlight( _, [] ).
 writeHighlight( Color, [ H | HS ] ) :-
       write( H )
@@ -102,7 +107,12 @@ writeHighlight( Color, [ H | HS ] ) :-
     , write( '];' )
     , nl
     , writeHighlight( Color, HS ).
-    
+ 
+/* graphvizFilename( +Time, -Filename )
+* composes name for graphviz output file
+* @Time         time of graph
+* @Filename     name to be used for export
+*/
 graphvizFilename(Time, Filename):-
     graphName(GName),
     timeConversion( Time, Year-Month-Day+Hour:Minute),

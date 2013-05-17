@@ -1,5 +1,6 @@
 % DynamicGraph, graphManipulation module
 %
+% Displays progress of in time interval graph, also exporting it to graphviz if enabled.
 %
 % date: 2013-05-16
 % responsible for exported functions:

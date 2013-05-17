@@ -2,7 +2,7 @@
 %
 % Module basic graph manipulations:
 % - load graph for the moment to database
-% - depth first search in this graph
+% - spep through graph as it changes, updating state in database
 %
 % date: 2013-05-15
 % responsible for exported functions:
@@ -182,11 +182,12 @@ resetChanges :-
     , changeList( _, _, Changes )
     , assertz( changesTail( Changes ) ).
 
+% fastForwardChanges( +Moment )
 fastForwardChanges( Moment ) :-
       retract( changesTail( Changes ) )
     , fastForwardChanges( Moment, Changes, ForwardChanges )
     , assertz( changesTail( ForwardChanges ) ).
-
+% fastForwardChanges( +Moment, +ChangeList, -ChangeListAfter )
 fastForwardChanges( _, [], [] ) :- !.
 fastForwardChanges( Moment, [ minute( Time, Ch ) | NextChanges ],  
                             [ minute( Time, Ch ) | NextChanges ] ) :- Time > Moment, !.
@@ -217,11 +218,13 @@ validateGraph42( [ deleteEdge( X, Y ) | CS ], NextChanges, M, Success ) :-
     ;  Success = error, deletingNonexisten( M, X, Y )
     ).
 
+% duplicate( +Minutem, +X, +Y )
 duplicate( Minute, X, Y ) :-
       messages( duplicatedEdge, [ MSG ] )
     , timeToAtom( Minute, AMin )
     , concatenateAtoms( [ MSG, AMin, ': ( ', X, ', ', Y, ' ).' ], FinalMsg )
     , outputMessage( error, [ FinalMsg ] ).
+% deletingNonexisten( +Minute, +X, +Y )
 deletingNonexisten( Minute, X, Y ) :-
       messages( deletingNonexistenEdge, [ MSG ] )
     , timeToAtom( Minute, AMin )
