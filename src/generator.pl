@@ -5,7 +5,8 @@
 %
 % generator module
 %
-% Description to be added.
+% Generates random graph, eiter interactivelly or from given description.
+% Description must be valid prolog file with predicates described in report.
 %
 % date: 2013-05-14
 % responsible for exported functions:
@@ -16,10 +17,14 @@
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
+:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3, numberToAtom/2
+                          , openFileForReading/1 ] ).
 :- use_module( time, [ timeConversion/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
+/* graphGenerate
+* iteractive graph generation
+*/
 graphGenerate :-
       getName
     , getNodes
@@ -106,9 +111,7 @@ unloadUser :-
     , retractall( removeEdge( _, _, _ ) )
     , retractall( duration( _, _ ) ).
 
-% TODO
 isDuration( F, T ) :- timeConversion( FF, F ), timeConversion( TT, T ), FF < TT.
-    
 
 invalidInput( E ) :-
       messages( invalidInput, [ II ] )
@@ -117,9 +120,13 @@ invalidInput( E ) :-
 
 ask( Q ) :- messages( Q, M ), outputMessage( question, M ).
 
+/* graphGenerate( +File )
+* generates graph from given description
+* @File     description file to be used for generation
+*/
 graphGenerate( File ) :-
       seeing( OldFile )
-    , see( File )
+    , openFileForReading( File )
     , loadGeneratorPreds( Preds )
     , seen
     , see( OldFile )
@@ -344,7 +351,11 @@ writeFile1( [] ).
 writeFile1( [ e( V1, V2, F, T ) | ES ] ) :-
       timeConversion( F, From )
     , Dur is T - F
-    , write( e( V1, V2, From, Dur ) )
+    , numberToAtom( V1, V1A )
+    , numberToAtom( V2, V2A )
+    , concatenateAtoms( [ 'n', V1A ], Vertex1 )
+    , concatenateAtoms( [ 'n', V2A ], Vertex2 )
+    , write( e( Vertex1, Vertex2, From, Dur ) )
     , write( '.' )
     , nl
     , writeFile1( ES ).
