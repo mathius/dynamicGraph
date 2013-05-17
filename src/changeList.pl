@@ -12,8 +12,6 @@
 :- use_module( library( lists ) ).
 :- use_module( graph, [ edge/4 ] ).
 
-% TBD
-printChangeList.
 
 /* getChangeList( -ChangeList )
  generates list of changes of graph in database
@@ -48,6 +46,7 @@ withEnd( [], [] ).
 withEnd( [ e( X, Y, S, E ) | ES ], [ E - e( X, Y, S, E ) | WES ] ) :-
     withEnd( ES, WES ).
 
+:- dynamic queue/1.
 % based on http://ai.ia.agh.edu.pl/wiki/pl:prolog:pllib:findall
 findEdges( List)  :-
       graph:edge( X, Y, Z, W )                         % Find a solution
