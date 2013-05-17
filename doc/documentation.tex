@@ -98,7 +98,10 @@
 
 \section{Introduction}
 
-Dynamic Graph is a program to analyze graphs with dynamic edges that appear or disappear over time. It can find continuous components at given time moment, find the biggest component in a specified time interval or display simple statistics about nodes and edges.
+Dynamic Graph is a program to analyze graphs with dynamic edges that appear or disappear over time. It can find continuous 
+components at given time moment, find the biggest component in a specified time interval or display simple statistics about 
+nodes and edges.
+Full source code and documentation is available from our public GitHub repository at \url{http://github.com/mathius/dynamicGraph}.
 
 \section{User interface}
 
@@ -107,7 +110,7 @@ call the top level predicate \pl{dynamicGraph/0}).
 After start, basic program info is displayed followed by the internal command prompt (\pl{|: }).
 All the commands are using Prolog predicate syntax - i. e. they must always end with a dot character (\pl{.}) 
 with optional parameters in parentheses before it. Commands are divided into several categories.
-All commands provide feedback on performed actions, with either info prefix (\pl{# }) or error prefix (\pl{! }).
+All commands provide feedback on performed actions, with either info prefix (\pl{\# }) or error prefix (\pl{! }).
 
 The interactive interface holds several global settings that can be altered by specific commands. 
 These settings include currently loaded graph, boundaries of the time interval and status of the \gv{} support. 
@@ -238,6 +241,17 @@ Display the list of commands with short description.
 Quit DynamicGraph session.
 \end{itemize}
 
+\subsection{Processing user commands and printing feedback}
+
+All commands read from the user are checked and only permitted commands are called.
+Commands are validated using \pl{validCommand/3} predicate -- in case of existing command,
+internal predicate callback is unified back. Thus, internal names are independent from the names used by user.
+
+Messages output back to user are differentiated into 3 types: info messages (\pl{\# }), error messages (\pl{! }) and 
+messages asking for further information (\pl{? }). Lines are automatically prefixed based on messages types.
+All messages are saved in dedicated \pl{messaging} module,
+enabling extra-easy translation of the program or mistake correction.
+
 \section{File specification}
 \label{sec:files}
 
@@ -272,7 +286,6 @@ e(c, b, 2013-04-07+22:24, 3000).
 
 % This edge is valid, it starts right after the first ends
 e(a, b, 2013-04-08+13:00, 60).
-
 e(e, f, 2013-04-08+20:00, 0).
 
 \end{verbatim}
