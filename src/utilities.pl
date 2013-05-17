@@ -1,4 +1,9 @@
-% DynamicGraph, utilities module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% utilities module
 %
 % This module contains general functions useful throughout the project.
 %

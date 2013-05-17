@@ -1,4 +1,9 @@
-% DynamicGraph, graphComponent module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% graphComponent module
 %
 % This module contains predicates for computing components of a graph
 % 

@@ -1,4 +1,9 @@
-% DynamicGraph, graph module
+% IB013 Logic Programming
+% project 4 (Dynamic graph 2)
+% Andrej Krejcir (xkrejcir), Martin Ukrop (xukrop), Vladimir Still (xstill)
+% developed using SICStus Prolog 4.2.3
+%
+% graph module
 %
 % Module for loading graph from file, checking its consistency and printing it.
 %
