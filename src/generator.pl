@@ -12,7 +12,7 @@
 :- use_module( library( lists ) ).
 :- use_module( library( random ) ).
 :- use_module( queue ).
-:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3 ] ).
+:- use_module( utilities, [ concatenateAtoms/2, prefixToLast/3, numberToAtom/2 ] ).
 :- use_module( time, [ timeConversion/2 ] ).
 :- use_module( messaging, [ outputMessage/2, messages/2 ] ). 
 
@@ -345,7 +345,11 @@ writeFile1( [] ).
 writeFile1( [ e( V1, V2, F, T ) | ES ] ) :-
       timeConversion( F, From )
     , Dur is T - F
-    , write( e( V1, V2, From, Dur ) )
+    , numberToAtom( V1, V1A )
+    , numberToAtom( V2, V2A )
+    , concatenateAtoms( [ 'n', V1A ], Vertex1 )
+    , concatenateAtoms( [ 'n', V2A ], Vertex2 )
+    , write( e( Vertex1, Vertex2, From, Dur ) )
     , write( '.' )
     , nl
     , writeFile1( ES ).
