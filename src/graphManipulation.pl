@@ -7,7 +7,7 @@
 % date: 2013-05-15
 % responsible for exported functions:
 %       Martin Ukrop (graphInMoment/1, edge/2)
-%       Vladimír Štill ( initializeGraph/1, advanceMinute/1, edge/2
+%       Vladimir Still ( initializeGraph/1, advanceMinute/1, edge/2
 %                      , startOfTime/1, endOfTime/1, currentTime/1
 %                      , changesFromNow/1 )
 %
