@@ -139,7 +139,7 @@ messages( edgeInfo1, % used for printing edge statistics
           ['Edge from: ', ' to ']
         ).
 messages( edgeInfo2, % used for printing edge statistics
-          ['Start time: ', 'End time:   ', ' -- ', 'Interval: ' , ' min']
+          ['Start time: ', 'End time:   ', 'Interval: ' , ' min']
         ).
 messages( edgeMax, % used for printing edge statistics
           ['Edge with longest time interval:']

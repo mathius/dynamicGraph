@@ -132,8 +132,12 @@ statsEdges:-
     numberToAtom(L, LA),
     concatenateAtoms([EdgeNumMsg, LA], Msg),
     outputMessage(info, [Msg]),    
-    printEdges(Edges),
-    
+    (   L =< 10, !,
+        printEdges(Edges)
+        ;
+        true
+    ),
+                              
     longestEdge(Edges, LEdge),
     shortestEdge(Edges, SEdge),
     messages(edgeMax, [EdgeMaxMsg]),
@@ -147,16 +151,14 @@ statsEdges:-
     
 printEdge(ed(X,Y,B,E)):-
     messages(edgeInfo1, [MFrom, MTo]),
-    messages(edgeInfo2, [MStart, MEnd, MLine, MInt ,MMin]),
+    messages(edgeInfo2, [MStart, MEnd, MInt ,MMin]),
     timeToAtom(B,BeginTimeA),
     timeToAtom(E,EndTimeA),
     Minutes is E - B,
-    numberToAtom(B,BA),
-    numberToAtom(E,EA),
     numberToAtom(Minutes, MinutesA),
     concatenateAtoms([MFrom, X, MTo, Y], Msg1),
-    concatenateAtoms([MStart, BeginTimeA, MLine, BA], Msg2),
-    concatenateAtoms([MEnd, EndTimeA, MLine, EA], Msg3),
+    concatenateAtoms([MStart, BeginTimeA], Msg2),
+    concatenateAtoms([MEnd, EndTimeA], Msg3),
     concatenateAtoms([MInt, MinutesA, MMin], Msg4),
     outputMessage(info, [Msg1, Msg2, Msg3, Msg4]).
 
